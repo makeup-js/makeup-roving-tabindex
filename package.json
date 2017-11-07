@@ -49,5 +49,8 @@
     "parallelshell": "^3",
     "pre-commit": "^1",
     "rimraf": "^2"
+  },
+  "dependencies": {
+    "makeup-navigation-emitter": "~0.0"
   }
 }

@@ -1276,6 +1276,10 @@ currently-unhandled@^0.4.1:
   dependencies:
     array-find-index "^1.0.1"
 
+custom-event-polyfill@~0.3:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/custom-event-polyfill/-/custom-event-polyfill-0.3.0.tgz#99807839be62edb446b645832e0d80ead6fa1888"
+
 custom-event@~1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/custom-event/-/custom-event-1.0.1.tgz#5d02a46850adf1b4a317946a3928fccb5bfd0425"
@@ -2895,6 +2899,25 @@ lru-cache@^4.0.1:
   dependencies:
     pseudomap "^1.0.2"
     yallist "^2.1.2"
+
+makeup-exit-emitter@~0.0:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/makeup-exit-emitter/-/makeup-exit-emitter-0.0.2.tgz#837918e2b216cf0d8d1abec14325d2b565859161"
+  dependencies:
+    custom-event-polyfill "~0.3"
+
+makeup-key-emitter@~0.0:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/makeup-key-emitter/-/makeup-key-emitter-0.0.2.tgz#86e2e27166fd42a3e55f82b0ad304463b4b86289"
+  dependencies:
+    custom-event-polyfill "~0.3"
+
+makeup-navigation-emitter@~0.0:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/makeup-navigation-emitter/-/makeup-navigation-emitter-0.0.1.tgz#28483b4046874cf9441c6a277debe521b8f85a60"
+  dependencies:
+    makeup-exit-emitter "~0.0"
+    makeup-key-emitter "~0.0"
 
 map-obj@^1.0.0, map-obj@^1.0.1:
   version "1.0.1"
