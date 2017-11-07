@@ -25,9 +25,61 @@ npm install makeup-roving-tabindex
 yarn add makeup-roving-tabindex
 ```
 
+## Example
+
+```js
+// require the module
+const RovingTabindex = require('makeup-roving-tabindex');
+
+// get an element reference
+const widgetEl = document.querySelector('.widget');
+
+// create a roving tabindex instance on the element
+const rovingTabindex = RovingTabindex.createLinear(widgetEl, 'li');
+
+// set the active element
+rovingTabindex.index = 0;
+
+// listen for events (optional)
+widgetEl.addEventListener('rovingTabindexChange', function(e) {
+    // console.log(e.detail);
+})
+```
+
+Markup before:
+
+```html
+<div class="widget">
+    <ul>
+        <li>Item 1</li>
+        <li>Item 2</li>
+        <li>Item 3</li>
+    </ul>
+</div>
+```
+
+Markup after:
+
+```html
+<div class="widget">
+    <ul>
+        <li data-makeup-index="0" tabindex="0">Item 1</li>
+        <li data-makeup-index="1" tabindex="-1">Item 2</li>
+        <li data-makeup-index="2" tabindex="-1">Item 3</li>
+    </ul>
+</div>
+```
+
+## Custom Events        
+
+* `rovingTabindexChange`
+    * detail
+        * fromIndex
+        * toIndex
+
 ## Dependencies
 
-* makeup-navigation-emitter
+* `makeup-navigation-emitter`
 
 ## Development
 
