@@ -268,7 +268,7 @@ function onKeyPrev() {
     if (!this.atStart()) {
         this.index--;
     } else if (this._options.wrap) {
-        this.index = this._items.length - 1;
+        this.index = this.items.length - 1;
     }
 }
 
@@ -292,7 +292,7 @@ function onKeyHome() {
 }
 
 function onKeyEnd() {
-    this.index = this._items.length;
+    this.index = this.items.length;
 }
 
 function onFocusExit() {
@@ -312,9 +312,14 @@ var NavigationModel = function () {
     }
 
     _createClass(NavigationModel, [{
-        key: 'wrap',
-        set: function set(newWrap) {
-            this._options.wrap = newWrap;
+        key: 'items',
+        get: function get() {
+            return this._items;
+        }
+    }, {
+        key: 'options',
+        get: function get() {
+            return this._options;
         }
     }]);
 
@@ -342,7 +347,7 @@ var LinearNavigationModel = function (_NavigationModel) {
     _createClass(LinearNavigationModel, [{
         key: 'atEnd',
         value: function atEnd() {
-            return this.index === this._items.length - 1;
+            return this.index === this.items.length - 1;
         }
     }, {
         key: 'atStart',
@@ -396,7 +401,7 @@ var NavigationEmitter = function () {
         this.focusExitListener = onFocusExit.bind(model);
         this.observer = new MutationObserver(onMutation.bind(model));
 
-        setData(model._items);
+        setData(model.items);
 
         KeyEmitter.addKeyDown(el);
         ExitEmitter.addFocusExit(el);
@@ -414,9 +419,9 @@ var NavigationEmitter = function () {
     }
 
     _createClass(NavigationEmitter, [{
-        key: 'wrap',
-        set: function set(newWrap) {
-            this._model.wrap = newWrap;
+        key: 'model',
+        get: function get() {
+            return this._model;
         }
     }], [{
         key: 'createLinear',
@@ -537,7 +542,7 @@ var LinearRovingTabindex = function (_RovingTabindex) {
     }, {
         key: 'wrap',
         set: function set(newWrap) {
-            this._navigationEmitter.model.wrap = newWrap;
+            this._navigationEmitter.model.options.wrap = newWrap;
         }
     }]);
 
