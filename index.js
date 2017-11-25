@@ -1,5 +1,7 @@
 'use strict';
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -11,20 +13,47 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var NavigationEmitter = require('makeup-navigation-emitter');
 var Util = require('./util.js');
 
+var defaultOptions = {
+    index: 0
+};
+
 function onModelMutation() {
+    var modelIndex = this._navigationEmitter.model.index;
+
     this._items = Util.nodeListToArray(this._el.querySelectorAll(this._itemSelector));
-    this.updateView();
+
+    this._items.forEach(function (el, index) {
+        if (index !== modelIndex) {
+            el.setAttribute('tabindex', '-1');
+        } else {
+            el.setAttribute('tabindex', '0');
+        }
+    });
+}
+
+function onModelInit(e) {
+    this._index = e.detail.toIndex;
+
+    this._items.forEach(function (el) {
+        el.setAttribute('tabindex', '-1');
+    });
+
+    this._items[e.detail.toIndex].setAttribute('tabindex', '0');
 }
 
 function onModelChange(e) {
-    var fromItem = this.items[e.detail.fromIndex];
-    var toItem = this.items[e.detail.toIndex];
+    var fromItem = this._items[e.detail.fromIndex];
+    var toItem = this._items[e.detail.toIndex];
 
     if (fromItem) {
         fromItem.setAttribute('tabindex', '-1');
     }
-    toItem.setAttribute('tabindex', '0');
-    toItem.focus();
+
+    if (toItem) {
+        toItem.setAttribute('tabindex', '0');
+        toItem.focus();
+    }
+
     this._el.dispatchEvent(new CustomEvent('rovingTabindexChange', {
         detail: {
             toIndex: e.detail.toIndex,
@@ -33,56 +62,40 @@ function onModelChange(e) {
     }));
 }
 
-function onUpdateEachItem(item, index) {
-    if (index !== this._navigationEmitter.model.index) {
-        item.setAttribute('tabindex', '-1');
-    } else {
-        item.setAttribute('tabindex', '0');
-    }
-}
-
 var RovingTabindex = function RovingTabindex(el) {
     _classCallCheck(this, RovingTabindex);
 
     this._el = el;
-    this.onMutationListener = onModelMutation.bind(this);
-    this.onChangeListener = onModelChange.bind(this);
+    this._onMutationListener = onModelMutation.bind(this);
+    this._onChangeListener = onModelChange.bind(this);
+    this._onInitListener = onModelInit.bind(this);
 
-    el.addEventListener('navigationModelMutation', this.onMutationListener);
-    el.addEventListener('navigationModelChange', this.onChangeListener);
+    el.addEventListener('navigationModelMutation', this._onMutationListener);
+    el.addEventListener('navigationModelChange', this._onChangeListener);
+    el.addEventListener('navigationModelInit', this._onInitListener);
 };
 
 var LinearRovingTabindex = function (_RovingTabindex) {
     _inherits(LinearRovingTabindex, _RovingTabindex);
 
-    function LinearRovingTabindex(el, itemSelector) {
+    function LinearRovingTabindex(el, itemSelector, selectedOptions) {
         _classCallCheck(this, LinearRovingTabindex);
 
         var _this = _possibleConstructorReturn(this, (LinearRovingTabindex.__proto__ || Object.getPrototypeOf(LinearRovingTabindex)).call(this, el));
 
-        _this._navigationEmitter = NavigationEmitter.createLinear(el, itemSelector);
+        _this._options = _extends({}, defaultOptions, selectedOptions);
+
         _this._itemSelector = itemSelector;
-        _this._items = Util.nodeListToArray(el.querySelectorAll(_this._itemSelector));
+        _this._items = Util.nodeListToArray(el.querySelectorAll(itemSelector));
+
+        _this._navigationEmitter = NavigationEmitter.createLinear(el, itemSelector, {
+            autoInit: _this._options.index,
+            autoReset: null
+        });
         return _this;
     }
 
     _createClass(LinearRovingTabindex, [{
-        key: 'updateView',
-        value: function updateView() {
-            this.items.forEach(onUpdateEachItem.bind(this));
-        }
-    }, {
-        key: 'items',
-        get: function get() {
-            return this._items;
-        }
-    }, {
-        key: 'index',
-        set: function set(newIndex) {
-            this._navigationEmitter.model.index = newIndex;
-            this.updateView();
-        }
-    }, {
         key: 'wrap',
         set: function set(newWrap) {
             this._navigationEmitter.model.options.wrap = newWrap;
@@ -100,8 +113,8 @@ class GridRovingTabindex extends RovingTabindex {
 }
 */
 
-function createLinear(el, itemSelector) {
-    return new LinearRovingTabindex(el, itemSelector);
+function createLinear(el, itemSelector, selectedOptions) {
+    return new LinearRovingTabindex(el, itemSelector, selectedOptions);
 }
 
 module.exports = {

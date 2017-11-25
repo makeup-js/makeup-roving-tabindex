@@ -1,19 +1,6 @@
-$_mod.installed("makeup-roving-tabindex$0.0.1", "makeup-navigation-emitter", "0.0.1");
-$_mod.main("/makeup-navigation-emitter$0.0.1", "");
-$_mod.def("/makeup-navigation-emitter$0.0.1/util", function(require, exports, module, __filename, __dirname) { "use strict";
-
-function nodeListToArray(nodeList) {
-    return Array.prototype.slice.call(nodeList);
-}
-
-module.exports = {
-    nodeListToArray: nodeListToArray
-};
-
-});
-$_mod.installed("makeup-navigation-emitter$0.0.1", "makeup-key-emitter", "0.0.2");
-$_mod.main("/makeup-key-emitter$0.0.2", "");
-$_mod.installed("makeup-key-emitter$0.0.2", "custom-event-polyfill", "0.3.0");
+$_mod.installed("makeup-roving-tabindex$0.0.1", "makeup-navigation-emitter", "0.0.3");
+$_mod.main("/makeup-navigation-emitter$0.0.3", "");
+$_mod.installed("makeup-navigation-emitter$0.0.3", "custom-event-polyfill", "0.3.0");
 $_mod.main("/custom-event-polyfill$0.3.0", "custom-event-polyfill");
 $_mod.def("/custom-event-polyfill$0.3.0/custom-event-polyfill", function(require, exports, module, __filename, __dirname) { // Polyfill for creating CustomEvents on IE9/10/11
 
@@ -61,6 +48,20 @@ try {
 }
 
 });
+$_mod.def("/makeup-navigation-emitter$0.0.3/util", function(require, exports, module, __filename, __dirname) { "use strict";
+
+function nodeListToArray(nodeList) {
+    return Array.prototype.slice.call(nodeList);
+}
+
+module.exports = {
+    nodeListToArray: nodeListToArray
+};
+
+});
+$_mod.installed("makeup-navigation-emitter$0.0.3", "makeup-key-emitter", "0.0.2");
+$_mod.main("/makeup-key-emitter$0.0.2", "");
+$_mod.installed("makeup-key-emitter$0.0.2", "custom-event-polyfill", "0.3.0");
 $_mod.def("/makeup-key-emitter$0.0.2/util", function(require, exports, module, __filename, __dirname) { 'use strict';
 
 /*
@@ -170,7 +171,7 @@ module.exports = {
 };
 
 });
-$_mod.installed("makeup-navigation-emitter$0.0.1", "makeup-exit-emitter", "0.0.2");
+$_mod.installed("makeup-navigation-emitter$0.0.3", "makeup-exit-emitter", "0.0.2");
 $_mod.main("/makeup-exit-emitter$0.0.2", "");
 $_mod.installed("makeup-exit-emitter$0.0.2", "custom-event-polyfill", "0.3.0");
 $_mod.def("/makeup-exit-emitter$0.0.2/index", function(require, exports, module, __filename, __dirname) { 'use strict';
@@ -234,14 +235,14 @@ module.exports = {
 };
 
 });
-$_mod.def("/makeup-navigation-emitter$0.0.1/index", function(require, exports, module, __filename, __dirname) { 'use strict';
+$_mod.def("/makeup-navigation-emitter$0.0.3/index", function(require, exports, module, __filename, __dirname) { 'use strict';
 
 // requires Object.assign polyfill or transform for IE
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign#Polyfill
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
@@ -249,12 +250,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Util = require('/makeup-navigation-emitter$0.0.1/util'/*'./util.js'*/);
+var Util = require('/makeup-navigation-emitter$0.0.3/util'/*'./util.js'*/);
 var KeyEmitter = require('/makeup-key-emitter$0.0.2/index'/*'makeup-key-emitter'*/);
 var ExitEmitter = require('/makeup-exit-emitter$0.0.2/index'/*'makeup-exit-emitter'*/);
 var dataSetKey = 'data-makeup-index';
 
 var defaultOptions = {
+    autoInit: 0,
+    autoReset: null,
     wrap: false
 };
 
@@ -267,7 +270,7 @@ function setData(els) {
 function onKeyPrev() {
     if (!this.atStart()) {
         this.index--;
-    } else if (this._options.wrap) {
+    } else if (this.options.wrap) {
         this.index = this.items.length - 1;
     }
 }
@@ -275,7 +278,7 @@ function onKeyPrev() {
 function onKeyNext() {
     if (!this.atEnd()) {
         this.index++;
-    } else if (this._options.wrap) {
+    } else if (this.options.wrap) {
         this.index = 0;
     }
 }
@@ -296,35 +299,26 @@ function onKeyEnd() {
 }
 
 function onFocusExit() {
-    // console.log(e);
+    if (this.options.autoReset !== null) {
+        this.index = this.options.autoReset;
+    }
 }
 
 function onMutation() {
-    this._items = Util.nodeListToArray(this._el.querySelectorAll(this._itemSelector));
-    setData(this._items);
+    this.items = Util.nodeListToArray(this._el.querySelectorAll(this._itemSelector));
+    setData(this.items);
 
     this._el.dispatchEvent(new CustomEvent('navigationModelMutation'));
 }
 
-var NavigationModel = function () {
-    function NavigationModel() {
-        _classCallCheck(this, NavigationModel);
-    }
+var NavigationModel = function NavigationModel(el, itemSelector, selectedOptions) {
+    _classCallCheck(this, NavigationModel);
 
-    _createClass(NavigationModel, [{
-        key: 'items',
-        get: function get() {
-            return this._items;
-        }
-    }, {
-        key: 'options',
-        get: function get() {
-            return this._options;
-        }
-    }]);
-
-    return NavigationModel;
-}();
+    this.options = _extends({}, defaultOptions, selectedOptions);
+    this._el = el;
+    this._itemSelector = itemSelector;
+    this.items = Util.nodeListToArray(el.querySelectorAll(itemSelector));
+};
 
 var LinearNavigationModel = function (_NavigationModel) {
     _inherits(LinearNavigationModel, _NavigationModel);
@@ -332,15 +326,17 @@ var LinearNavigationModel = function (_NavigationModel) {
     function LinearNavigationModel(el, itemSelector, selectedOptions) {
         _classCallCheck(this, LinearNavigationModel);
 
-        var _this = _possibleConstructorReturn(this, (LinearNavigationModel.__proto__ || Object.getPrototypeOf(LinearNavigationModel)).call(this));
+        var _this = _possibleConstructorReturn(this, (LinearNavigationModel.__proto__ || Object.getPrototypeOf(LinearNavigationModel)).call(this, el, itemSelector, selectedOptions));
 
-        _this._options = _extends({}, defaultOptions, selectedOptions);
-
-        _this._index = null;
-
-        _this._el = el;
-        _this._itemSelector = itemSelector;
-        _this._items = Util.nodeListToArray(el.querySelectorAll(itemSelector));
+        if (_this.options.autoInit !== null) {
+            _this._index = _this.options.autoInit;
+            _this._el.dispatchEvent(new CustomEvent('navigationModelInit', {
+                detail: {
+                    toIndex: _this.options.autoInit
+                },
+                bubbles: false
+            }));
+        }
         return _this;
     }
 
@@ -352,7 +348,7 @@ var LinearNavigationModel = function (_NavigationModel) {
     }, {
         key: 'atStart',
         value: function atStart() {
-            return this.index === 0;
+            return this.index <= 0;
         }
     }, {
         key: 'index',
@@ -366,7 +362,7 @@ var LinearNavigationModel = function (_NavigationModel) {
                         toIndex: newIndex,
                         fromIndex: this.index
                     },
-                    bubbles: false // mirror the native mouseleave event
+                    bubbles: false
                 }));
                 this._index = newIndex;
             }
@@ -391,51 +387,47 @@ var NavigationEmitter = function () {
     function NavigationEmitter(el, model) {
         _classCallCheck(this, NavigationEmitter);
 
-        this._model = model;
+        this.model = model;
 
-        this.keyPrevListener = onKeyPrev.bind(model);
-        this.keyNextListener = onKeyNext.bind(model);
-        this.keyHomeListener = onKeyHome.bind(model);
-        this.keyEndListener = onKeyEnd.bind(model);
-        this.clickListener = onClick.bind(model);
-        this.focusExitListener = onFocusExit.bind(model);
-        this.observer = new MutationObserver(onMutation.bind(model));
+        this._keyPrevListener = onKeyPrev.bind(model);
+        this._keyNextListener = onKeyNext.bind(model);
+        this._keyHomeListener = onKeyHome.bind(model);
+        this._keyEndListener = onKeyEnd.bind(model);
+        this._clickListener = onClick.bind(model);
+        this._focusExitListener = onFocusExit.bind(model);
+        this._observer = new MutationObserver(onMutation.bind(model));
 
         setData(model.items);
 
         KeyEmitter.addKeyDown(el);
         ExitEmitter.addFocusExit(el);
 
-        el.addEventListener('arrowLeftKeyDown', this.keyPrevListener);
-        el.addEventListener('arrowRightKeyDown', this.keyNextListener);
-        el.addEventListener('arrowUpKeyDown', this.keyPrevListener);
-        el.addEventListener('arrowDownKeyDown', this.keyNextListener);
-        el.addEventListener('homeKeyDown', this.keyHomeListener);
-        el.addEventListener('endKeyDown', this.keyEndListener);
-        el.addEventListener('click', this.clickListener);
-        el.addEventListener('focusExit', this.focusExitListener);
+        el.addEventListener('arrowLeftKeyDown', this._keyPrevListener);
+        el.addEventListener('arrowRightKeyDown', this._keyNextListener);
+        el.addEventListener('arrowUpKeyDown', this._keyPrevListener);
+        el.addEventListener('arrowDownKeyDown', this._keyNextListener);
+        el.addEventListener('homeKeyDown', this._keyHomeListener);
+        el.addEventListener('endKeyDown', this._keyEndListener);
+        el.addEventListener('click', this._clickListener);
+        el.addEventListener('focusExit', this._focusExitListener);
 
-        this.observer.observe(el, { childList: true, subtree: true });
+        this._observer.observe(el, { childList: true, subtree: true });
     }
 
-    _createClass(NavigationEmitter, [{
-        key: 'model',
-        get: function get() {
-            return this._model;
-        }
-    }], [{
+    _createClass(NavigationEmitter, null, [{
         key: 'createLinear',
         value: function createLinear(el, itemSelector, selectedOptions) {
             var model = new LinearNavigationModel(el, itemSelector, selectedOptions);
 
             return new NavigationEmitter(el, model);
         }
-    }, {
-        key: 'createGrid',
-        value: function createGrid(el, rowSelector, colSelector, selectedOptions) {
-            // eslint-disable-line
+
+        /*
+        static createGrid(el, rowSelector, colSelector, selectedOptions) {
             return null;
         }
+        */
+
     }]);
 
     return NavigationEmitter;
@@ -457,6 +449,8 @@ module.exports = {
 });
 $_mod.def("/makeup-roving-tabindex$0.0.1/index", function(require, exports, module, __filename, __dirname) { 'use strict';
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -465,23 +459,50 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var NavigationEmitter = require('/makeup-navigation-emitter$0.0.1/index'/*'makeup-navigation-emitter'*/);
+var NavigationEmitter = require('/makeup-navigation-emitter$0.0.3/index'/*'makeup-navigation-emitter'*/);
 var Util = require('/makeup-roving-tabindex$0.0.1/util'/*'./util.js'*/);
 
+var defaultOptions = {
+    index: 0
+};
+
 function onModelMutation() {
+    var modelIndex = this._navigationEmitter.model.index;
+
     this._items = Util.nodeListToArray(this._el.querySelectorAll(this._itemSelector));
-    this.updateView();
+
+    this._items.forEach(function (el, index) {
+        if (index !== modelIndex) {
+            el.setAttribute('tabindex', '-1');
+        } else {
+            el.setAttribute('tabindex', '0');
+        }
+    });
+}
+
+function onModelInit(e) {
+    this._index = e.detail.toIndex;
+
+    this._items.forEach(function (el) {
+        el.setAttribute('tabindex', '-1');
+    });
+
+    this._items[e.detail.toIndex].setAttribute('tabindex', '0');
 }
 
 function onModelChange(e) {
-    var fromItem = this.items[e.detail.fromIndex];
-    var toItem = this.items[e.detail.toIndex];
+    var fromItem = this._items[e.detail.fromIndex];
+    var toItem = this._items[e.detail.toIndex];
 
     if (fromItem) {
         fromItem.setAttribute('tabindex', '-1');
     }
-    toItem.setAttribute('tabindex', '0');
-    toItem.focus();
+
+    if (toItem) {
+        toItem.setAttribute('tabindex', '0');
+        toItem.focus();
+    }
+
     this._el.dispatchEvent(new CustomEvent('rovingTabindexChange', {
         detail: {
             toIndex: e.detail.toIndex,
@@ -490,56 +511,40 @@ function onModelChange(e) {
     }));
 }
 
-function onUpdateEachItem(item, index) {
-    if (index !== this._navigationEmitter.model.index) {
-        item.setAttribute('tabindex', '-1');
-    } else {
-        item.setAttribute('tabindex', '0');
-    }
-}
-
 var RovingTabindex = function RovingTabindex(el) {
     _classCallCheck(this, RovingTabindex);
 
     this._el = el;
-    this.onMutationListener = onModelMutation.bind(this);
-    this.onChangeListener = onModelChange.bind(this);
+    this._onMutationListener = onModelMutation.bind(this);
+    this._onChangeListener = onModelChange.bind(this);
+    this._onInitListener = onModelInit.bind(this);
 
-    el.addEventListener('navigationModelMutation', this.onMutationListener);
-    el.addEventListener('navigationModelChange', this.onChangeListener);
+    el.addEventListener('navigationModelMutation', this._onMutationListener);
+    el.addEventListener('navigationModelChange', this._onChangeListener);
+    el.addEventListener('navigationModelInit', this._onInitListener);
 };
 
 var LinearRovingTabindex = function (_RovingTabindex) {
     _inherits(LinearRovingTabindex, _RovingTabindex);
 
-    function LinearRovingTabindex(el, itemSelector) {
+    function LinearRovingTabindex(el, itemSelector, selectedOptions) {
         _classCallCheck(this, LinearRovingTabindex);
 
         var _this = _possibleConstructorReturn(this, (LinearRovingTabindex.__proto__ || Object.getPrototypeOf(LinearRovingTabindex)).call(this, el));
 
-        _this._navigationEmitter = NavigationEmitter.createLinear(el, itemSelector);
+        _this._options = _extends({}, defaultOptions, selectedOptions);
+
         _this._itemSelector = itemSelector;
-        _this._items = Util.nodeListToArray(el.querySelectorAll(_this._itemSelector));
+        _this._items = Util.nodeListToArray(el.querySelectorAll(itemSelector));
+
+        _this._navigationEmitter = NavigationEmitter.createLinear(el, itemSelector, {
+            autoInit: _this._options.index,
+            autoReset: null
+        });
         return _this;
     }
 
     _createClass(LinearRovingTabindex, [{
-        key: 'updateView',
-        value: function updateView() {
-            this.items.forEach(onUpdateEachItem.bind(this));
-        }
-    }, {
-        key: 'items',
-        get: function get() {
-            return this._items;
-        }
-    }, {
-        key: 'index',
-        set: function set(newIndex) {
-            this._navigationEmitter.model.index = newIndex;
-            this.updateView();
-        }
-    }, {
         key: 'wrap',
         set: function set(newWrap) {
             this._navigationEmitter.model.options.wrap = newWrap;
@@ -557,8 +562,8 @@ class GridRovingTabindex extends RovingTabindex {
 }
 */
 
-function createLinear(el, itemSelector) {
-    return new LinearRovingTabindex(el, itemSelector);
+function createLinear(el, itemSelector, selectedOptions) {
+    return new LinearRovingTabindex(el, itemSelector, selectedOptions);
 }
 
 module.exports = {

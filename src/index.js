@@ -3,20 +3,47 @@
 const NavigationEmitter = require('makeup-navigation-emitter');
 const Util = require('./util.js');
 
+const defaultOptions = {
+    index: 0
+};
+
 function onModelMutation() {
+    const modelIndex = this._navigationEmitter.model.index;
+
     this._items = Util.nodeListToArray(this._el.querySelectorAll(this._itemSelector));
-    this.updateView();
+
+    this._items.forEach(function(el, index) {
+        if (index !== modelIndex) {
+            el.setAttribute('tabindex', '-1');
+        } else {
+            el.setAttribute('tabindex', '0');
+        }
+    });
+}
+
+function onModelInit(e) {
+    this._index = e.detail.toIndex;
+
+    this._items.forEach(function(el) {
+        el.setAttribute('tabindex', '-1');
+    });
+
+    this._items[e.detail.toIndex].setAttribute('tabindex', '0');
 }
 
 function onModelChange(e) {
-    const fromItem = this.items[e.detail.fromIndex];
-    const toItem = this.items[e.detail.toIndex];
+    const fromItem = this._items[e.detail.fromIndex];
+    const toItem = this._items[e.detail.toIndex];
 
     if (fromItem) {
         fromItem.setAttribute('tabindex', '-1');
     }
-    toItem.setAttribute('tabindex', '0');
-    toItem.focus();
+
+    if (toItem) {
+        toItem.setAttribute('tabindex', '0');
+        toItem.focus();
+    }
+
     this._el.dispatchEvent(new CustomEvent('rovingTabindexChange', {
         detail: {
             toIndex: e.detail.toIndex,
@@ -25,45 +52,32 @@ function onModelChange(e) {
     }));
 }
 
-function onUpdateEachItem(item, index) {
-    if (index !== this._navigationEmitter.model.index) {
-        item.setAttribute('tabindex', '-1');
-    } else {
-        item.setAttribute('tabindex', '0');
-    }
-}
-
 class RovingTabindex {
     constructor(el) {
         this._el = el;
-        this.onMutationListener = onModelMutation.bind(this);
-        this.onChangeListener = onModelChange.bind(this);
+        this._onMutationListener = onModelMutation.bind(this);
+        this._onChangeListener = onModelChange.bind(this);
+        this._onInitListener = onModelInit.bind(this);
 
-        el.addEventListener('navigationModelMutation', this.onMutationListener);
-        el.addEventListener('navigationModelChange', this.onChangeListener);
+        el.addEventListener('navigationModelMutation', this._onMutationListener);
+        el.addEventListener('navigationModelChange', this._onChangeListener);
+        el.addEventListener('navigationModelInit', this._onInitListener);
     }
 }
 
 class LinearRovingTabindex extends RovingTabindex {
-    constructor(el, itemSelector) {
+    constructor(el, itemSelector, selectedOptions) {
         super(el);
 
-        this._navigationEmitter = NavigationEmitter.createLinear(el, itemSelector);
+        this._options = Object.assign({}, defaultOptions, selectedOptions);
+
         this._itemSelector = itemSelector;
-        this._items = Util.nodeListToArray(el.querySelectorAll(this._itemSelector));
-    }
+        this._items = Util.nodeListToArray(el.querySelectorAll(itemSelector));
 
-    updateView() {
-        this.items.forEach(onUpdateEachItem.bind(this));
-    }
-
-    get items() {
-        return this._items;
-    }
-
-    set index(newIndex) {
-        this._navigationEmitter.model.index = newIndex;
-        this.updateView();
+        this._navigationEmitter = NavigationEmitter.createLinear(el, itemSelector, {
+            autoInit: this._options.index,
+            autoReset: null
+        });
     }
 
     set wrap(newWrap) {
@@ -79,8 +93,8 @@ class GridRovingTabindex extends RovingTabindex {
 }
 */
 
-function createLinear(el, itemSelector) {
-    return new LinearRovingTabindex(el, itemSelector);
+function createLinear(el, itemSelector, selectedOptions) {
+    return new LinearRovingTabindex(el, itemSelector, selectedOptions);
 }
 
 module.exports = {

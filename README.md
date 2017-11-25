@@ -35,10 +35,7 @@ const RovingTabindex = require('makeup-roving-tabindex');
 const widgetEl = document.querySelector('.widget');
 
 // create a roving tabindex instance on the element
-const rovingTabindex = RovingTabindex.createLinear(widgetEl, 'li');
-
-// set the active element
-rovingTabindex.index = 0;
+const rovingTabindex = RovingTabindex.createLinear(widgetEl, 'li', { index: 0 });
 
 // listen for events (optional)
 widgetEl.addEventListener('rovingTabindexChange', function(e) {
@@ -69,6 +66,10 @@ Markup after:
     </ul>
 </div>
 ```
+
+## Options
+
+* `index`: the index position of the active item (default: 0)
 
 ## Custom Events        
 

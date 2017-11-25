@@ -18,14 +18,15 @@ appender.addEventListener('click', function() {
 });
 
 widgetEls.forEach(function(el) {
-    rovers.push(RovingTabindex.createLinear(el, 'li'));
-    rovers[0].index = 0;
+    rovers.push(RovingTabindex.createLinear(el, 'li', { index: 0 }));
+
     el.addEventListener('rovingTabindexChange', function(e) {
         console.log(e);
     });
 });
 
 wrapCheckbox.addEventListener('change', function(e) {
-    rovers[0].wrap = e.target.checked;
-    // rovers[1].options.wrap = e.target.checked;
+    rovers.forEach(function(rover) {
+        rover.wrap = e.target.checked;
+    });
 });
