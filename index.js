@@ -14,6 +14,7 @@ var NavigationEmitter = require('makeup-navigation-emitter');
 var Util = require('./util.js');
 
 var defaultOptions = {
+    autoReset: null,
     index: 0
 };
 
@@ -32,6 +33,16 @@ function onModelMutation() {
 }
 
 function onModelInit(e) {
+    this._index = e.detail.toIndex;
+
+    this._items.forEach(function (el) {
+        el.setAttribute('tabindex', '-1');
+    });
+
+    this._items[e.detail.toIndex].setAttribute('tabindex', '0');
+}
+
+function onModelReset(e) {
     this._index = e.detail.toIndex;
 
     this._items.forEach(function (el) {
@@ -69,10 +80,12 @@ var RovingTabindex = function RovingTabindex(el) {
     this._onMutationListener = onModelMutation.bind(this);
     this._onChangeListener = onModelChange.bind(this);
     this._onInitListener = onModelInit.bind(this);
+    this._onResetListener = onModelReset.bind(this);
 
     el.addEventListener('navigationModelMutation', this._onMutationListener);
     el.addEventListener('navigationModelChange', this._onChangeListener);
     el.addEventListener('navigationModelInit', this._onInitListener);
+    el.addEventListener('navigationModelReset', this._onResetListener);
 };
 
 var LinearRovingTabindex = function (_RovingTabindex) {
@@ -90,7 +103,7 @@ var LinearRovingTabindex = function (_RovingTabindex) {
 
         _this._navigationEmitter = NavigationEmitter.createLinear(el, itemSelector, {
             autoInit: _this._options.index,
-            autoReset: null
+            autoReset: _this._options.autoReset
         });
         return _this;
     }
