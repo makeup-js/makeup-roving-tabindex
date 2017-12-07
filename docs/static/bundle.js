@@ -591,7 +591,7 @@ https://github.com/joyent/node/blob/master/lib/module.js
     }
 })();
 
-$_mod.installed("makeup-roving-tabindex$0.0.2", "makeup-navigation-emitter", "0.0.3");
+$_mod.installed("makeup-roving-tabindex$0.0.3", "makeup-navigation-emitter", "0.0.3");
 $_mod.main("/makeup-navigation-emitter$0.0.3", "");
 $_mod.installed("makeup-navigation-emitter$0.0.3", "custom-event-polyfill", "0.3.0");
 $_mod.main("/custom-event-polyfill$0.3.0", "custom-event-polyfill");
@@ -1030,7 +1030,7 @@ var NavigationEmitter = function () {
 module.exports = NavigationEmitter;
 
 });
-$_mod.def("/makeup-roving-tabindex$0.0.2/util", function(require, exports, module, __filename, __dirname) { "use strict";
+$_mod.def("/makeup-roving-tabindex$0.0.3/util", function(require, exports, module, __filename, __dirname) { "use strict";
 
 function nodeListToArray(nodeList) {
     return Array.prototype.slice.call(nodeList);
@@ -1041,7 +1041,7 @@ module.exports = {
 };
 
 });
-$_mod.def("/makeup-roving-tabindex$0.0.2/index", function(require, exports, module, __filename, __dirname) { 'use strict';
+$_mod.def("/makeup-roving-tabindex$0.0.3/index", function(require, exports, module, __filename, __dirname) { 'use strict';
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -1054,7 +1054,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var NavigationEmitter = require('/makeup-navigation-emitter$0.0.3/index'/*'makeup-navigation-emitter'*/);
-var Util = require('/makeup-roving-tabindex$0.0.2/util'/*'./util.js'*/);
+var Util = require('/makeup-roving-tabindex$0.0.3/util'/*'./util.js'*/);
 
 var defaultOptions = {
     autoReset: null,
@@ -1178,7 +1178,7 @@ module.exports = {
 };
 
 });
-$_mod.def("/makeup-roving-tabindex$0.0.2/docs/index", function(require, exports, module, __filename, __dirname) { var RovingTabindex = require('/makeup-roving-tabindex$0.0.2/index'/*'../index.js'*/);
+$_mod.def("/makeup-roving-tabindex$0.0.3/docs/index", function(require, exports, module, __filename, __dirname) { var RovingTabindex = require('/makeup-roving-tabindex$0.0.3/index'/*'../index.js'*/);
 
 function nodeListToArray(nodeList) {
     return Array.prototype.slice.call(nodeList);
@@ -1212,4 +1212,4 @@ wrapCheckbox.addEventListener('change', function(e) {
 });
 
 });
-$_mod.run("/makeup-roving-tabindex$0.0.2/docs/index");
+$_mod.run("/makeup-roving-tabindex$0.0.3/docs/index");
