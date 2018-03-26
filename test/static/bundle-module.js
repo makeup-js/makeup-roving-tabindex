@@ -1,4 +1,4 @@
-$_mod.installed("makeup-roving-tabindex$0.0.3", "makeup-navigation-emitter", "0.0.3");
+$_mod.installed("makeup-roving-tabindex$0.0.4", "makeup-navigation-emitter", "0.0.3");
 $_mod.main("/makeup-navigation-emitter$0.0.3", "");
 $_mod.installed("makeup-navigation-emitter$0.0.3", "custom-event-polyfill", "0.3.0");
 $_mod.main("/custom-event-polyfill$0.3.0", "custom-event-polyfill");
@@ -436,7 +436,7 @@ var NavigationEmitter = function () {
 module.exports = NavigationEmitter;
 
 });
-$_mod.def("/makeup-roving-tabindex$0.0.3/util", function(require, exports, module, __filename, __dirname) { "use strict";
+$_mod.def("/makeup-roving-tabindex$0.0.4/util", function(require, exports, module, __filename, __dirname) { "use strict";
 
 function nodeListToArray(nodeList) {
     return Array.prototype.slice.call(nodeList);
@@ -447,7 +447,7 @@ module.exports = {
 };
 
 });
-$_mod.def("/makeup-roving-tabindex$0.0.3/index", function(require, exports, module, __filename, __dirname) { 'use strict';
+$_mod.def("/makeup-roving-tabindex$0.0.4/index", function(require, exports, module, __filename, __dirname) { 'use strict';
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -460,7 +460,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var NavigationEmitter = require('/makeup-navigation-emitter$0.0.3/index'/*'makeup-navigation-emitter'*/);
-var Util = require('/makeup-roving-tabindex$0.0.3/util'/*'./util.js'*/);
+var Util = require('/makeup-roving-tabindex$0.0.4/util'/*'./util.js'*/);
 
 var defaultOptions = {
     autoReset: null,
