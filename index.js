@@ -15,7 +15,8 @@ var Util = require('./util.js');
 
 var defaultOptions = {
     autoReset: null,
-    index: 0
+    index: 0,
+    wrap: false
 };
 
 function onModelMutation() {
@@ -103,7 +104,8 @@ var LinearRovingTabindex = function (_RovingTabindex) {
 
         _this._navigationEmitter = NavigationEmitter.createLinear(el, itemSelector, {
             autoInit: _this._options.index,
-            autoReset: _this._options.autoReset
+            autoReset: _this._options.autoReset,
+            wrap: _this._options.wrap
         });
         return _this;
     }

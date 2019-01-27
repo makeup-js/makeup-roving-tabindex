@@ -5,7 +5,8 @@ const Util = require('./util.js');
 
 const defaultOptions = {
     autoReset: null,
-    index: 0
+    index: 0,
+    wrap: false
 };
 
 function onModelMutation() {
@@ -89,7 +90,8 @@ class LinearRovingTabindex extends RovingTabindex {
 
         this._navigationEmitter = NavigationEmitter.createLinear(el, itemSelector, {
             autoInit: this._options.index,
-            autoReset: this._options.autoReset
+            autoReset: this._options.autoReset,
+            wrap: this._options.wrap
         });
     }
 
