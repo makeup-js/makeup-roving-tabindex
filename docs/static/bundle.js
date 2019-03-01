@@ -591,9 +591,9 @@ https://github.com/joyent/node/blob/master/lib/module.js
     }
 })();
 
-$_mod.installed("makeup-roving-tabindex$0.1.0", "makeup-navigation-emitter", "0.1.0");
-$_mod.main("/makeup-navigation-emitter$0.1.0", "");
-$_mod.installed("makeup-navigation-emitter$0.1.0", "custom-event-polyfill", "0.3.0");
+$_mod.installed("makeup-roving-tabindex$0.1.0", "makeup-navigation-emitter", "0.1.2");
+$_mod.main("/makeup-navigation-emitter$0.1.2", "");
+$_mod.installed("makeup-navigation-emitter$0.1.2", "custom-event-polyfill", "0.3.0");
 $_mod.main("/custom-event-polyfill$0.3.0", "custom-event-polyfill");
 $_mod.def("/custom-event-polyfill$0.3.0/custom-event-polyfill", function(require, exports, module, __filename, __dirname) { // Polyfill for creating CustomEvents on IE9/10/11
 
@@ -642,7 +642,7 @@ try {
 
 });
 $_mod.run("/custom-event-polyfill$0.3.0/custom-event-polyfill");
-$_mod.def("/makeup-navigation-emitter$0.1.0/util", function(require, exports, module, __filename, __dirname) { "use strict";
+$_mod.def("/makeup-navigation-emitter$0.1.2/util", function(require, exports, module, __filename, __dirname) { "use strict";
 
 function nodeListToArray(nodeList) {
     return Array.prototype.slice.call(nodeList);
@@ -653,7 +653,7 @@ module.exports = {
 };
 
 });
-$_mod.installed("makeup-navigation-emitter$0.1.0", "makeup-key-emitter", "0.0.3");
+$_mod.installed("makeup-navigation-emitter$0.1.2", "makeup-key-emitter", "0.0.3");
 $_mod.main("/makeup-key-emitter$0.0.3", "");
 $_mod.installed("makeup-key-emitter$0.0.3", "custom-event-polyfill", "0.3.0");
 $_mod.def("/makeup-key-emitter$0.0.3/util", function(require, exports, module, __filename, __dirname) { 'use strict';
@@ -765,7 +765,7 @@ module.exports = {
 };
 
 });
-$_mod.installed("makeup-navigation-emitter$0.1.0", "makeup-exit-emitter", "0.0.4");
+$_mod.installed("makeup-navigation-emitter$0.1.2", "makeup-exit-emitter", "0.0.4");
 $_mod.main("/makeup-exit-emitter$0.0.4", "");
 $_mod.installed("makeup-exit-emitter$0.0.4", "custom-event-polyfill", "0.3.0");
 $_mod.installed("makeup-exit-emitter$0.0.4", "makeup-next-id", "0.0.2");
@@ -893,7 +893,7 @@ module.exports = {
 };
 
 });
-$_mod.def("/makeup-navigation-emitter$0.1.0/index", function(require, exports, module, __filename, __dirname) { 'use strict';
+$_mod.def("/makeup-navigation-emitter$0.1.2/index", function(require, exports, module, __filename, __dirname) { 'use strict';
 
 // requires Object.assign polyfill or transform for IE
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign#Polyfill
@@ -908,7 +908,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Util = require('/makeup-navigation-emitter$0.1.0/util'/*'./util.js'*/);
+var Util = require('/makeup-navigation-emitter$0.1.2/util'/*'./util.js'*/);
 var KeyEmitter = require('/makeup-key-emitter$0.0.3/index'/*'makeup-key-emitter'*/);
 var ExitEmitter = require('/makeup-exit-emitter$0.0.4/index'/*'makeup-exit-emitter'*/);
 var dataSetKey = 'data-makeup-index';
@@ -945,13 +945,15 @@ function onClick(e) {
     var element = e.target;
     var indexData = element.dataset.makeupIndex;
 
-    // traverse ancestors until interactive element is found
-    while (!indexData) {
+    // traverse widget ancestors until interactive element is found
+    while (element !== this._el && !indexData) {
         element = element.parentNode;
         indexData = element.dataset.makeupIndex;
     }
 
-    this.index = indexData;
+    if (indexData !== undefined) {
+        this.index = indexData;
+    }
 }
 
 function onKeyHome() {
@@ -1129,7 +1131,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var NavigationEmitter = require('/makeup-navigation-emitter$0.1.0/index'/*'makeup-navigation-emitter'*/);
+var NavigationEmitter = require('/makeup-navigation-emitter$0.1.2/index'/*'makeup-navigation-emitter'*/);
 var Util = require('/makeup-roving-tabindex$0.1.0/util'/*'./util.js'*/);
 
 var defaultOptions = {

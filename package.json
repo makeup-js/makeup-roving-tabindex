@@ -48,7 +48,7 @@
     "rimraf": "^2"
   },
   "dependencies": {
-    "makeup-navigation-emitter": "~0.1.0"
+    "makeup-navigation-emitter": "~0.1.2"
   },
   "files": [
     "browser.json",
