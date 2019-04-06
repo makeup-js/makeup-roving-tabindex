@@ -72,10 +72,26 @@ class RovingTabindex {
         this._onInitListener = onModelInit.bind(this);
         this._onResetListener = onModelReset.bind(this);
 
-        el.addEventListener('navigationModelMutation', this._onMutationListener);
-        el.addEventListener('navigationModelChange', this._onChangeListener);
-        el.addEventListener('navigationModelInit', this._onInitListener);
-        el.addEventListener('navigationModelReset', this._onResetListener);
+        this._el.addEventListener('navigationModelMutation', this._onMutationListener);
+        this._el.addEventListener('navigationModelChange', this._onChangeListener);
+        this._el.addEventListener('navigationModelInit', this._onInitListener);
+        this._el.addEventListener('navigationModelReset', this._onResetListener);
+    }
+
+    set _el(el) {
+        return el;
+    }
+
+    get _el() {
+        if (!document.body.contains(el)) console.warn("The root element was removed!");
+        return itemEl;
+    }
+
+    destroy() {
+        this._el.removeEventListener('navigationModelMutation', this._onMutationListener);
+        this._el.removeEventListener('navigationModelChange', this._onChangeListener);
+        this._el.removeEventListener('navigationModelInit', this._onInitListener);
+        this._el.removeEventListener('navigationModelReset', this._onResetListener);
     }
 }
 
@@ -97,6 +113,21 @@ class LinearRovingTabindex extends RovingTabindex {
 
     set wrap(newWrap) {
         this._navigationEmitter.model.options.wrap = newWrap;
+    }
+
+    set _items(items) {
+        return items;
+    }
+
+    get _items() {
+        return this._items.forEach(function(itemEl) {
+            if (!document.body.contains(itemEl)) console.warn("The item element was removed!");
+            return itemEl;
+        });
+    }
+
+    destroy() {
+        this._navigationEmitter.destroy();
     }
 }
 
