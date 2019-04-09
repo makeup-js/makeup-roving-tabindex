@@ -12,8 +12,6 @@ const defaultOptions = {
 function onModelMutation() {
     const modelIndex = this._navigationEmitter.model.index;
 
-    this._items = Util.nodeListToArray(this._el.querySelectorAll(this._itemSelector));
-
     this._items.forEach(function(el, index) {
         if (index !== modelIndex) {
             el.setAttribute('tabindex', '-1');
@@ -93,7 +91,6 @@ class LinearRovingTabindex extends RovingTabindex {
         this._options = Object.assign({}, defaultOptions, selectedOptions);
 
         this._itemSelector = itemSelector;
-        this._items = Util.nodeListToArray(el.querySelectorAll(itemSelector));
 
         this._navigationEmitter = NavigationEmitter.createLinear(el, itemSelector, {
             autoInit: this._options.index,
@@ -104,10 +101,6 @@ class LinearRovingTabindex extends RovingTabindex {
 
     set wrap(newWrap) {
         this._navigationEmitter.model.options.wrap = newWrap;
-    }
-
-    set _items(items) {
-        return items;
     }
 
     get _items() {

@@ -1143,8 +1143,6 @@ var defaultOptions = {
 function onModelMutation() {
     var modelIndex = this._navigationEmitter.model.index;
 
-    this._items = Util.nodeListToArray(this._el.querySelectorAll(this._itemSelector));
-
     this._items.forEach(function (el, index) {
         if (index !== modelIndex) {
             el.setAttribute('tabindex', '-1');
@@ -1235,7 +1233,6 @@ var LinearRovingTabindex = function (_RovingTabindex) {
         _this._options = _extends({}, defaultOptions, selectedOptions);
 
         _this._itemSelector = itemSelector;
-        _this._items = Util.nodeListToArray(el.querySelectorAll(itemSelector));
 
         _this._navigationEmitter = NavigationEmitter.createLinear(el, itemSelector, {
             autoInit: _this._options.index,
@@ -1257,9 +1254,6 @@ var LinearRovingTabindex = function (_RovingTabindex) {
         }
     }, {
         key: '_items',
-        set: function set(items) {
-            return items;
-        },
         get: function get() {
             return Util.nodeListToArray(this._el.querySelectorAll(this._itemSelector));
         }
