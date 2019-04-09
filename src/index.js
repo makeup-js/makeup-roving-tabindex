@@ -78,15 +78,6 @@ class RovingTabindex {
         this._el.addEventListener('navigationModelReset', this._onResetListener);
     }
 
-    set _el(el) {
-        return el;
-    }
-
-    get _el() {
-        if (!document.body.contains(el)) console.warn("The root element was removed!");
-        return itemEl;
-    }
-
     destroy() {
         this._el.removeEventListener('navigationModelMutation', this._onMutationListener);
         this._el.removeEventListener('navigationModelChange', this._onChangeListener);
@@ -120,10 +111,7 @@ class LinearRovingTabindex extends RovingTabindex {
     }
 
     get _items() {
-        return this._items.forEach(function(itemEl) {
-            if (!document.body.contains(itemEl)) console.warn("The item element was removed!");
-            return itemEl;
-        });
+        return Util.nodeListToArray(this._el.querySelectorAll(this._itemSelector));
     }
 
     destroy() {

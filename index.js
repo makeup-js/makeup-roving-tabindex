@@ -98,15 +98,6 @@ var RovingTabindex = function () {
             this._el.removeEventListener('navigationModelInit', this._onInitListener);
             this._el.removeEventListener('navigationModelReset', this._onResetListener);
         }
-    }, {
-        key: '_el',
-        set: function set(el) {
-            return el;
-        },
-        get: function get() {
-            if (!document.body.contains(el)) console.warn("The root element was removed!");
-            return itemEl;
-        }
     }]);
 
     return RovingTabindex;
@@ -149,10 +140,7 @@ var LinearRovingTabindex = function (_RovingTabindex) {
             return items;
         },
         get: function get() {
-            return this._items.forEach(function (itemEl) {
-                if (!document.body.contains(itemEl)) console.warn("The item element was removed!");
-                return itemEl;
-            });
+            return Util.nodeListToArray(this._el.querySelectorAll(this._itemSelector));
         }
     }]);
 

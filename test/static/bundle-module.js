@@ -601,20 +601,40 @@ function onModelChange(e) {
     }));
 }
 
-var RovingTabindex = function RovingTabindex(el) {
-    _classCallCheck(this, RovingTabindex);
+var RovingTabindex = function () {
+    function RovingTabindex(el) {
+        _classCallCheck(this, RovingTabindex);
 
-    this._el = el;
-    this._onMutationListener = onModelMutation.bind(this);
-    this._onChangeListener = onModelChange.bind(this);
-    this._onInitListener = onModelInit.bind(this);
-    this._onResetListener = onModelReset.bind(this);
+        this._el = el;
+        this._onMutationListener = onModelMutation.bind(this);
+        this._onChangeListener = onModelChange.bind(this);
+        this._onInitListener = onModelInit.bind(this);
+        this._onResetListener = onModelReset.bind(this);
 
-    el.addEventListener('navigationModelMutation', this._onMutationListener);
-    el.addEventListener('navigationModelChange', this._onChangeListener);
-    el.addEventListener('navigationModelInit', this._onInitListener);
-    el.addEventListener('navigationModelReset', this._onResetListener);
-};
+        this._el.addEventListener('navigationModelMutation', this._onMutationListener);
+        this._el.addEventListener('navigationModelChange', this._onChangeListener);
+        this._el.addEventListener('navigationModelInit', this._onInitListener);
+        this._el.addEventListener('navigationModelReset', this._onResetListener);
+    }
+
+    _createClass(RovingTabindex, [{
+        key: 'destroy',
+        value: function destroy() {
+            this._el.removeEventListener('navigationModelMutation', this._onMutationListener);
+            this._el.removeEventListener('navigationModelChange', this._onChangeListener);
+            this._el.removeEventListener('navigationModelInit', this._onInitListener);
+            this._el.removeEventListener('navigationModelReset', this._onResetListener);
+        }
+    }, {
+        key: '_el',
+        get: function get() {
+            if (!document.body.contains(this._el)) console.warn("The root element was removed!");
+            return this._el;
+        }
+    }]);
+
+    return RovingTabindex;
+}();
 
 var LinearRovingTabindex = function (_RovingTabindex) {
     _inherits(LinearRovingTabindex, _RovingTabindex);
@@ -638,9 +658,19 @@ var LinearRovingTabindex = function (_RovingTabindex) {
     }
 
     _createClass(LinearRovingTabindex, [{
+        key: 'destroy',
+        value: function destroy() {
+            this._navigationEmitter.destroy();
+        }
+    }, {
         key: 'wrap',
         set: function set(newWrap) {
             this._navigationEmitter.model.options.wrap = newWrap;
+        }
+    }, {
+        key: '_items',
+        get: function get() {
+            return Util.nodeListToArray(this.el.querySelectorAll(this._itemSelector));
         }
     }]);
 
