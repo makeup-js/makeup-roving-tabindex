@@ -131,6 +131,9 @@ var LinearRovingTabindex = function (_RovingTabindex) {
         set: function set(newWrap) {
             this._navigationEmitter.model.options.wrap = newWrap;
         }
+
+        // we cannot use a cached version of the items in question since the DOM may change without notice
+
     }, {
         key: '_items',
         get: function get() {

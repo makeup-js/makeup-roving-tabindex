@@ -103,6 +103,7 @@ class LinearRovingTabindex extends RovingTabindex {
         this._navigationEmitter.model.options.wrap = newWrap;
     }
 
+    // we cannot use a cached version of the items in question since the DOM may change without notice
     get _items() {
         return Util.nodeListToArray(this._el.querySelectorAll(this._itemSelector));
     }
