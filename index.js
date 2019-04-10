@@ -22,8 +22,6 @@ var defaultOptions = {
 function onModelMutation() {
     var modelIndex = this._navigationEmitter.model.index;
 
-    this._items = Util.nodeListToArray(this._el.querySelectorAll(this._itemSelector));
-
     this._items.forEach(function (el, index) {
         if (index !== modelIndex) {
             el.setAttribute('tabindex', '-1');
@@ -74,20 +72,34 @@ function onModelChange(e) {
     }));
 }
 
-var RovingTabindex = function RovingTabindex(el) {
-    _classCallCheck(this, RovingTabindex);
+var RovingTabindex = function () {
+    function RovingTabindex(el) {
+        _classCallCheck(this, RovingTabindex);
 
-    this._el = el;
-    this._onMutationListener = onModelMutation.bind(this);
-    this._onChangeListener = onModelChange.bind(this);
-    this._onInitListener = onModelInit.bind(this);
-    this._onResetListener = onModelReset.bind(this);
+        this._el = el;
+        this._onMutationListener = onModelMutation.bind(this);
+        this._onChangeListener = onModelChange.bind(this);
+        this._onInitListener = onModelInit.bind(this);
+        this._onResetListener = onModelReset.bind(this);
 
-    el.addEventListener('navigationModelMutation', this._onMutationListener);
-    el.addEventListener('navigationModelChange', this._onChangeListener);
-    el.addEventListener('navigationModelInit', this._onInitListener);
-    el.addEventListener('navigationModelReset', this._onResetListener);
-};
+        this._el.addEventListener('navigationModelMutation', this._onMutationListener);
+        this._el.addEventListener('navigationModelChange', this._onChangeListener);
+        this._el.addEventListener('navigationModelInit', this._onInitListener);
+        this._el.addEventListener('navigationModelReset', this._onResetListener);
+    }
+
+    _createClass(RovingTabindex, [{
+        key: 'destroy',
+        value: function destroy() {
+            this._el.removeEventListener('navigationModelMutation', this._onMutationListener);
+            this._el.removeEventListener('navigationModelChange', this._onChangeListener);
+            this._el.removeEventListener('navigationModelInit', this._onInitListener);
+            this._el.removeEventListener('navigationModelReset', this._onResetListener);
+        }
+    }]);
+
+    return RovingTabindex;
+}();
 
 var LinearRovingTabindex = function (_RovingTabindex) {
     _inherits(LinearRovingTabindex, _RovingTabindex);
@@ -100,7 +112,6 @@ var LinearRovingTabindex = function (_RovingTabindex) {
         _this._options = _extends({}, defaultOptions, selectedOptions);
 
         _this._itemSelector = itemSelector;
-        _this._items = Util.nodeListToArray(el.querySelectorAll(itemSelector));
 
         _this._navigationEmitter = NavigationEmitter.createLinear(el, itemSelector, {
             autoInit: _this._options.index,
@@ -111,9 +122,22 @@ var LinearRovingTabindex = function (_RovingTabindex) {
     }
 
     _createClass(LinearRovingTabindex, [{
+        key: 'destroy',
+        value: function destroy() {
+            this._navigationEmitter.destroy();
+        }
+    }, {
         key: 'wrap',
         set: function set(newWrap) {
             this._navigationEmitter.model.options.wrap = newWrap;
+        }
+
+        // we cannot use a cached version of the items in question since the DOM may change without notice
+
+    }, {
+        key: '_items',
+        get: function get() {
+            return Util.nodeListToArray(this._el.querySelectorAll(this._itemSelector));
         }
     }]);
 

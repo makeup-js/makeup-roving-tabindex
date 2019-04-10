@@ -12,8 +12,6 @@ const defaultOptions = {
 function onModelMutation() {
     const modelIndex = this._navigationEmitter.model.index;
 
-    this._items = Util.nodeListToArray(this._el.querySelectorAll(this._itemSelector));
-
     this._items.forEach(function(el, index) {
         if (index !== modelIndex) {
             el.setAttribute('tabindex', '-1');
@@ -72,10 +70,17 @@ class RovingTabindex {
         this._onInitListener = onModelInit.bind(this);
         this._onResetListener = onModelReset.bind(this);
 
-        el.addEventListener('navigationModelMutation', this._onMutationListener);
-        el.addEventListener('navigationModelChange', this._onChangeListener);
-        el.addEventListener('navigationModelInit', this._onInitListener);
-        el.addEventListener('navigationModelReset', this._onResetListener);
+        this._el.addEventListener('navigationModelMutation', this._onMutationListener);
+        this._el.addEventListener('navigationModelChange', this._onChangeListener);
+        this._el.addEventListener('navigationModelInit', this._onInitListener);
+        this._el.addEventListener('navigationModelReset', this._onResetListener);
+    }
+
+    destroy() {
+        this._el.removeEventListener('navigationModelMutation', this._onMutationListener);
+        this._el.removeEventListener('navigationModelChange', this._onChangeListener);
+        this._el.removeEventListener('navigationModelInit', this._onInitListener);
+        this._el.removeEventListener('navigationModelReset', this._onResetListener);
     }
 }
 
@@ -86,7 +91,6 @@ class LinearRovingTabindex extends RovingTabindex {
         this._options = Object.assign({}, defaultOptions, selectedOptions);
 
         this._itemSelector = itemSelector;
-        this._items = Util.nodeListToArray(el.querySelectorAll(itemSelector));
 
         this._navigationEmitter = NavigationEmitter.createLinear(el, itemSelector, {
             autoInit: this._options.index,
@@ -97,6 +101,15 @@ class LinearRovingTabindex extends RovingTabindex {
 
     set wrap(newWrap) {
         this._navigationEmitter.model.options.wrap = newWrap;
+    }
+
+    // we cannot use a cached version of the items in question since the DOM may change without notice
+    get _items() {
+        return Util.nodeListToArray(this._el.querySelectorAll(this._itemSelector));
+    }
+
+    destroy() {
+        this._navigationEmitter.destroy();
     }
 }
 
