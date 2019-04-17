@@ -12,38 +12,32 @@ const defaultOptions = {
 function onModelMutation() {
     const modelIndex = this._navigationEmitter.model.index;
 
-    this._items.forEach(function(el, index) {
-        if (index !== modelIndex) {
-            el.setAttribute('tabindex', '-1');
-        } else {
-            el.setAttribute('tabindex', '0');
-        }
-    });
+    this._items.forEach((el, index) => el.setAttribute('tabindex', index !== modelIndex ? '-1' : '0'));
 }
 
 function onModelInit(e) {
-    this._index = e.detail.toIndex;
+    this._index = e.detail.toIndex; // seems unused internally. scheduled for deletion.
 
-    this._items.forEach(function(el) {
-        el.setAttribute('tabindex', '-1');
-    });
+    const items = this._items;
 
-    this._items[e.detail.toIndex].setAttribute('tabindex', '0');
+    items.filter((el, index) => index !== e.detail.toIndex).forEach(el => el.setAttribute('tabindex', '-1'));
+    items[e.detail.toIndex].setAttribute('tabindex', '0');
 }
 
 function onModelReset(e) {
-    this._index = e.detail.toIndex;
+    this._index = e.detail.toIndex; // seems unused internally. scheduled for deletion.
 
-    this._items.forEach(function(el) {
-        el.setAttribute('tabindex', '-1');
-    });
+    const items = this._items;
 
-    this._items[e.detail.toIndex].setAttribute('tabindex', '0');
+    items.filter((el, index) => index !== e.detail.toIndex).forEach(el => el.setAttribute('tabindex', '-1'));
+    items[e.detail.toIndex].setAttribute('tabindex', '0');
 }
 
 function onModelChange(e) {
-    const fromItem = this._items[e.detail.fromIndex];
-    const toItem = this._items[e.detail.toIndex];
+    const items = this._items;
+
+    const fromItem = items[e.detail.fromIndex];
+    const toItem = items[e.detail.toIndex];
 
     if (fromItem) {
         fromItem.setAttribute('tabindex', '-1');
@@ -56,8 +50,8 @@ function onModelChange(e) {
 
     this._el.dispatchEvent(new CustomEvent('rovingTabindexChange', {
         detail: {
-            toIndex: e.detail.toIndex,
-            fromIndex: e.detail.fromIndex
+            fromIndex: e.detail.fromIndex,
+            toIndex: e.detail.toIndex
         }
     }));
 }
@@ -99,13 +93,21 @@ class LinearRovingTabindex extends RovingTabindex {
         });
     }
 
+    get index() {
+        return this._navigationEmitter.model.index;
+    }
+
+    set index(newIndex) {
+        this._navigationEmitter.model.index = newIndex;
+    }
+
     set wrap(newWrap) {
         this._navigationEmitter.model.options.wrap = newWrap;
     }
 
     // we cannot use a cached version of the items in question since the DOM may change without notice
     get _items() {
-        return Util.nodeListToArray(this._el.querySelectorAll(this._itemSelector));
+        return Util.querySelectorAllToArray(this._itemSelector, this._el);
     }
 
     destroy() {
@@ -115,7 +117,7 @@ class LinearRovingTabindex extends RovingTabindex {
 
 /*
 class GridRovingTabindex extends RovingTabindex {
-    constructor(el, rowSelector, cellSelector) {
+    constructor(el, rowSelector, cellSelector, selectedOptions) {
         super(el);
     }
 }

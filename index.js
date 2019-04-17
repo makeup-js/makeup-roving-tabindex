@@ -23,37 +23,41 @@ function onModelMutation() {
     var modelIndex = this._navigationEmitter.model.index;
 
     this._items.forEach(function (el, index) {
-        if (index !== modelIndex) {
-            el.setAttribute('tabindex', '-1');
-        } else {
-            el.setAttribute('tabindex', '0');
-        }
+        return el.setAttribute('tabindex', index !== modelIndex ? '-1' : '0');
     });
 }
 
 function onModelInit(e) {
-    this._index = e.detail.toIndex;
+    this._index = e.detail.toIndex; // seems unused internally. scheduled for deletion.
 
-    this._items.forEach(function (el) {
-        el.setAttribute('tabindex', '-1');
+    var items = this._items;
+
+    items.filter(function (el, index) {
+        return index !== e.detail.toIndex;
+    }).forEach(function (el) {
+        return el.setAttribute('tabindex', '-1');
     });
-
-    this._items[e.detail.toIndex].setAttribute('tabindex', '0');
+    items[e.detail.toIndex].setAttribute('tabindex', '0');
 }
 
 function onModelReset(e) {
-    this._index = e.detail.toIndex;
+    this._index = e.detail.toIndex; // seems unused internally. scheduled for deletion.
 
-    this._items.forEach(function (el) {
-        el.setAttribute('tabindex', '-1');
+    var items = this._items;
+
+    items.filter(function (el, index) {
+        return index !== e.detail.toIndex;
+    }).forEach(function (el) {
+        return el.setAttribute('tabindex', '-1');
     });
-
-    this._items[e.detail.toIndex].setAttribute('tabindex', '0');
+    items[e.detail.toIndex].setAttribute('tabindex', '0');
 }
 
 function onModelChange(e) {
-    var fromItem = this._items[e.detail.fromIndex];
-    var toItem = this._items[e.detail.toIndex];
+    var items = this._items;
+
+    var fromItem = items[e.detail.fromIndex];
+    var toItem = items[e.detail.toIndex];
 
     if (fromItem) {
         fromItem.setAttribute('tabindex', '-1');
@@ -66,8 +70,8 @@ function onModelChange(e) {
 
     this._el.dispatchEvent(new CustomEvent('rovingTabindexChange', {
         detail: {
-            toIndex: e.detail.toIndex,
-            fromIndex: e.detail.fromIndex
+            fromIndex: e.detail.fromIndex,
+            toIndex: e.detail.toIndex
         }
     }));
 }
@@ -127,6 +131,14 @@ var LinearRovingTabindex = function (_RovingTabindex) {
             this._navigationEmitter.destroy();
         }
     }, {
+        key: 'index',
+        get: function get() {
+            return this._navigationEmitter.model.index;
+        },
+        set: function set(newIndex) {
+            this._navigationEmitter.model.index = newIndex;
+        }
+    }, {
         key: 'wrap',
         set: function set(newWrap) {
             this._navigationEmitter.model.options.wrap = newWrap;
@@ -137,7 +149,7 @@ var LinearRovingTabindex = function (_RovingTabindex) {
     }, {
         key: '_items',
         get: function get() {
-            return Util.nodeListToArray(this._el.querySelectorAll(this._itemSelector));
+            return Util.querySelectorAllToArray(this._itemSelector, this._el);
         }
     }]);
 
@@ -146,7 +158,7 @@ var LinearRovingTabindex = function (_RovingTabindex) {
 
 /*
 class GridRovingTabindex extends RovingTabindex {
-    constructor(el, rowSelector, cellSelector) {
+    constructor(el, rowSelector, cellSelector, selectedOptions) {
         super(el);
     }
 }

@@ -35,7 +35,7 @@ const RovingTabindex = require('makeup-roving-tabindex');
 const widgetEl = document.querySelector('.widget');
 
 // create a roving tabindex instance on the element
-const rovingTabindex = RovingTabindex.createLinear(widgetEl, 'li', { autoReset: null, index: 0 });
+const rovingTabindex = RovingTabindex.createLinear(widgetEl, 'li');
 
 // listen for events (optional)
 widgetEl.addEventListener('rovingTabindexChange', function(e) {
@@ -69,9 +69,17 @@ Markup after:
 
 ## Options
 
-* `autoReset`: specify an index value that should receive tabindex="0" on navigationModelReset event (default: null)
-* `index`: the index position of the active item (default: 0)
+* `autoReset`: the index position that should receive the roving tabindex when model is reset (default: null)
+* `index`: the initial index position of the roving tabindex (default: 0)
 * `wrap` : specify whether arrow keys should wrap/loop (default: false)
+
+## Properties
+
+* `index`: the index position of the roving tabindex (i.e. the element with tabindex="0")
+
+## Methods
+
+* `destroy`: destroys all event listeners
 
 ## Custom Events        
 
