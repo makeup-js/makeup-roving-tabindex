@@ -634,6 +634,8 @@ function onModelMutation() {
 }
 
 function onModelInit(e) {
+    this._index = e.detail.toIndex; // seems unused internally. scheduled for deletion.
+
     var items = this._items;
 
     items.filter(function (el, index) {
@@ -645,6 +647,8 @@ function onModelInit(e) {
 }
 
 function onModelReset(e) {
+    this._index = e.detail.toIndex; // seems unused internally. scheduled for deletion.
+
     var items = this._items;
 
     items.filter(function (el, index) {
@@ -656,7 +660,6 @@ function onModelReset(e) {
 }
 
 function onModelChange(e) {
-    console.log(e, e.type);
     var items = this._items;
 
     var fromItem = items[e.detail.fromIndex];
@@ -752,7 +755,7 @@ var LinearRovingTabindex = function (_RovingTabindex) {
     }, {
         key: '_items',
         get: function get() {
-            return Util.querySelectorAllToArray(this._itemSelector);
+            return Util.querySelectorAllToArray(this._itemSelector, this._el);
         }
     }]);
 
@@ -761,7 +764,7 @@ var LinearRovingTabindex = function (_RovingTabindex) {
 
 /*
 class GridRovingTabindex extends RovingTabindex {
-    constructor(el, rowSelector, cellSelector) {
+    constructor(el, rowSelector, cellSelector, selectedOptions) {
         super(el);
     }
 }
