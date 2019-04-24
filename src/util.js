@@ -7,7 +7,6 @@ function querySelectorAllToArray(selector, parentNode) {
     return nodeListToArray(parentNode.querySelectorAll(selector));
 }
 
-
 module.exports = {
     querySelectorAllToArray
 };
