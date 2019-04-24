@@ -591,9 +591,9 @@ https://github.com/joyent/node/blob/master/lib/module.js
     }
 })();
 
-$_mod.installed("makeup-roving-tabindex$0.1.2", "makeup-navigation-emitter", "0.1.3");
-$_mod.main("/makeup-navigation-emitter$0.1.3", "");
-$_mod.installed("makeup-navigation-emitter$0.1.3", "custom-event-polyfill", "1.0.7");
+$_mod.installed("makeup-roving-tabindex$0.1.2", "makeup-navigation-emitter", "0.1.4");
+$_mod.main("/makeup-navigation-emitter$0.1.4", "");
+$_mod.installed("makeup-navigation-emitter$0.1.4", "custom-event-polyfill", "1.0.7");
 $_mod.main("/custom-event-polyfill$1.0.7", "polyfill");
 $_mod.def("/custom-event-polyfill$1.0.7/polyfill", function(require, exports, module, __filename, __dirname) { // Polyfill for creating CustomEvents on IE9/10/11
 
@@ -651,7 +651,7 @@ $_mod.def("/custom-event-polyfill$1.0.7/polyfill", function(require, exports, mo
 
 });
 $_mod.run("/custom-event-polyfill$1.0.7/polyfill");
-$_mod.def("/makeup-navigation-emitter$0.1.3/util", function(require, exports, module, __filename, __dirname) { "use strict";
+$_mod.def("/makeup-navigation-emitter$0.1.4/util", function(require, exports, module, __filename, __dirname) { "use strict";
 
 function nodeListToArray(nodeList) {
     return Array.prototype.slice.call(nodeList);
@@ -662,7 +662,7 @@ module.exports = {
 };
 
 });
-$_mod.installed("makeup-navigation-emitter$0.1.3", "makeup-key-emitter", "0.0.3");
+$_mod.installed("makeup-navigation-emitter$0.1.4", "makeup-key-emitter", "0.0.3");
 $_mod.main("/makeup-key-emitter$0.0.3", "");
 $_mod.installed("makeup-key-emitter$0.0.3", "custom-event-polyfill", "0.3.0");
 $_mod.main("/custom-event-polyfill$0.3.0", "custom-event-polyfill");
@@ -822,7 +822,7 @@ module.exports = {
 };
 
 });
-$_mod.installed("makeup-navigation-emitter$0.1.3", "makeup-exit-emitter", "0.0.4");
+$_mod.installed("makeup-navigation-emitter$0.1.4", "makeup-exit-emitter", "0.0.4");
 $_mod.main("/makeup-exit-emitter$0.0.4", "");
 $_mod.installed("makeup-exit-emitter$0.0.4", "custom-event-polyfill", "0.3.0");
 $_mod.installed("makeup-exit-emitter$0.0.4", "makeup-next-id", "0.0.2");
@@ -950,7 +950,7 @@ module.exports = {
 };
 
 });
-$_mod.def("/makeup-navigation-emitter$0.1.3/index", function(require, exports, module, __filename, __dirname) { 'use strict';
+$_mod.def("/makeup-navigation-emitter$0.1.4/index", function(require, exports, module, __filename, __dirname) { 'use strict';
 
 // requires Object.assign polyfill or transform for IE
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign#Polyfill
@@ -965,7 +965,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Util = require('/makeup-navigation-emitter$0.1.3/util'/*'./util.js'*/);
+var Util = require('/makeup-navigation-emitter$0.1.4/util'/*'./util.js'*/);
 var KeyEmitter = require('/makeup-key-emitter$0.0.3/index'/*'makeup-key-emitter'*/);
 var ExitEmitter = require('/makeup-exit-emitter$0.0.4/index'/*'makeup-exit-emitter'*/);
 var dataSetKey = 'data-makeup-index';
@@ -1085,11 +1085,11 @@ var LinearNavigationModel = function (_NavigationModel) {
             return this._index;
         },
         set: function set(newIndex) {
-            if (newIndex !== this.index) {
+            if (newIndex > -1 && newIndex < this.items.length && newIndex !== this.index) {
                 this._el.dispatchEvent(new CustomEvent('navigationModelChange', {
                     detail: {
-                        toIndex: newIndex,
-                        fromIndex: this.index
+                        fromIndex: this.index,
+                        toIndex: newIndex
                     },
                     bubbles: false
                 }));
@@ -1189,8 +1189,13 @@ function nodeListToArray(nodeList) {
     return Array.prototype.slice.call(nodeList);
 }
 
+function querySelectorAllToArray(selector, parentNode) {
+    parentNode = parentNode || document;
+    return nodeListToArray(parentNode.querySelectorAll(selector));
+}
+
 module.exports = {
-    nodeListToArray: nodeListToArray
+    querySelectorAllToArray: querySelectorAllToArray
 };
 
 });
@@ -1206,7 +1211,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var NavigationEmitter = require('/makeup-navigation-emitter$0.1.3/index'/*'makeup-navigation-emitter'*/);
+var NavigationEmitter = require('/makeup-navigation-emitter$0.1.4/index'/*'makeup-navigation-emitter'*/);
 var Util = require('/makeup-roving-tabindex$0.1.2/util'/*'./util.js'*/);
 
 var defaultOptions = {
@@ -1219,37 +1224,41 @@ function onModelMutation() {
     var modelIndex = this._navigationEmitter.model.index;
 
     this._items.forEach(function (el, index) {
-        if (index !== modelIndex) {
-            el.setAttribute('tabindex', '-1');
-        } else {
-            el.setAttribute('tabindex', '0');
-        }
+        return el.setAttribute('tabindex', index !== modelIndex ? '-1' : '0');
     });
 }
 
 function onModelInit(e) {
-    this._index = e.detail.toIndex;
+    this._index = e.detail.toIndex; // seems unused internally. scheduled for deletion.
 
-    this._items.forEach(function (el) {
-        el.setAttribute('tabindex', '-1');
+    var items = this._items;
+
+    items.filter(function (el, index) {
+        return index !== e.detail.toIndex;
+    }).forEach(function (el) {
+        return el.setAttribute('tabindex', '-1');
     });
-
-    this._items[e.detail.toIndex].setAttribute('tabindex', '0');
+    items[e.detail.toIndex].setAttribute('tabindex', '0');
 }
 
 function onModelReset(e) {
-    this._index = e.detail.toIndex;
+    this._index = e.detail.toIndex; // seems unused internally. scheduled for deletion.
 
-    this._items.forEach(function (el) {
-        el.setAttribute('tabindex', '-1');
+    var items = this._items;
+
+    items.filter(function (el, index) {
+        return index !== e.detail.toIndex;
+    }).forEach(function (el) {
+        return el.setAttribute('tabindex', '-1');
     });
-
-    this._items[e.detail.toIndex].setAttribute('tabindex', '0');
+    items[e.detail.toIndex].setAttribute('tabindex', '0');
 }
 
 function onModelChange(e) {
-    var fromItem = this._items[e.detail.fromIndex];
-    var toItem = this._items[e.detail.toIndex];
+    var items = this._items;
+
+    var fromItem = items[e.detail.fromIndex];
+    var toItem = items[e.detail.toIndex];
 
     if (fromItem) {
         fromItem.setAttribute('tabindex', '-1');
@@ -1262,8 +1271,8 @@ function onModelChange(e) {
 
     this._el.dispatchEvent(new CustomEvent('rovingTabindexChange', {
         detail: {
-            toIndex: e.detail.toIndex,
-            fromIndex: e.detail.fromIndex
+            fromIndex: e.detail.fromIndex,
+            toIndex: e.detail.toIndex
         }
     }));
 }
@@ -1323,6 +1332,14 @@ var LinearRovingTabindex = function (_RovingTabindex) {
             this._navigationEmitter.destroy();
         }
     }, {
+        key: 'index',
+        get: function get() {
+            return this._navigationEmitter.model.index;
+        },
+        set: function set(newIndex) {
+            this._navigationEmitter.model.index = newIndex;
+        }
+    }, {
         key: 'wrap',
         set: function set(newWrap) {
             this._navigationEmitter.model.options.wrap = newWrap;
@@ -1333,7 +1350,7 @@ var LinearRovingTabindex = function (_RovingTabindex) {
     }, {
         key: '_items',
         get: function get() {
-            return Util.nodeListToArray(this._el.querySelectorAll(this._itemSelector));
+            return Util.querySelectorAllToArray(this._itemSelector, this._el);
         }
     }]);
 
@@ -1342,7 +1359,7 @@ var LinearRovingTabindex = function (_RovingTabindex) {
 
 /*
 class GridRovingTabindex extends RovingTabindex {
-    constructor(el, rowSelector, cellSelector) {
+    constructor(el, rowSelector, cellSelector, selectedOptions) {
         super(el);
     }
 }
@@ -1363,9 +1380,16 @@ function nodeListToArray(nodeList) {
     return Array.prototype.slice.call(nodeList);
 }
 
+function querySelectorAllToArray(selector, parentNode) {
+    parentNode = parentNode || document;
+    return nodeListToArray(parentNode.querySelectorAll(selector));
+}
+
 var rovers = [];
 var appender = document.getElementById('appender');
-var widgetEls = nodeListToArray(document.querySelectorAll('.widget'));
+var incrementer = document.getElementById('incrementer');
+var decrementer = document.getElementById('decrementer');
+var widgetEls = querySelectorAllToArray('.widget');
 var wrapCheckbox = document.getElementById('wrap');
 
 appender.addEventListener('click', function() {
@@ -1373,6 +1397,18 @@ appender.addEventListener('click', function() {
         var listItem = document.createElement('li');
         listItem.innerText = 'Item ' + parseInt(el.querySelectorAll('li').length, 10);
         el.children[0].appendChild(listItem);
+    });
+});
+
+incrementer.addEventListener('click', function() {
+    widgetEls.forEach(function(el, i) {
+        rovers[i].index++;
+    });
+});
+
+decrementer.addEventListener('click', function() {
+    widgetEls.forEach(function(el, i) {
+        rovers[i].index--;
     });
 });
 
