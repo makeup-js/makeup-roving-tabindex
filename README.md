@@ -92,6 +92,11 @@ Markup after:
 
 * `makeup-navigation-emitter`
 
+## Requirements
+
+* CustomEvent polyfill for IE11 (included if bundling with Lasso)
+* NodeList.forEach polyfill for IE11 (included if bundling with Lasso)
+
 ## Development
 
 * `yarn start`

@@ -1,7 +1,12 @@
 'use strict';
 
+/* Requires following polyfills or transforms for IE11
+ * Object.assign
+ * NodeList.forEach
+ * CustomEvent
+*/
+
 const NavigationEmitter = require('makeup-navigation-emitter');
-const Util = require('./util.js');
 
 const defaultOptions = {
     autoReset: null,
@@ -20,7 +25,7 @@ function onModelInit(e) {
 
     const items = this._items;
 
-    items.filter((el, index) => index !== e.detail.toIndex).forEach(el => el.setAttribute('tabindex', '-1'));
+    [...items].filter((el, index) => index !== e.detail.toIndex).forEach(el => el.setAttribute('tabindex', '-1'));
     items[e.detail.toIndex].setAttribute('tabindex', '0');
 }
 
@@ -29,7 +34,7 @@ function onModelReset(e) {
 
     const items = this._items;
 
-    items.filter((el, index) => index !== e.detail.toIndex).forEach(el => el.setAttribute('tabindex', '-1'));
+    [...items].filter((el, index) => index !== e.detail.toIndex).forEach(el => el.setAttribute('tabindex', '-1'));
     items[e.detail.toIndex].setAttribute('tabindex', '0');
 }
 
@@ -107,7 +112,7 @@ class LinearRovingTabindex extends RovingTabindex {
 
     // we cannot use a cached version of the items in question since the DOM may change without notice
     get _items() {
-        return Util.querySelectorAllToArray(this._itemSelector, this._el);
+        return this._el.querySelectorAll(this._itemSelector);
     }
 
     destroy() {
