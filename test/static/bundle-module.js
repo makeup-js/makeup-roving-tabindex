@@ -43,20 +43,16 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
-
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
 var NavigationEmitter = require('/makeup-navigation-emitter$0.2.0/index'/*'makeup-navigation-emitter'*/);
 
 var defaultOptions = {
   autoReset: null,
   index: 0,
   wrap: false
+};
+
+var nodeListToArray = function nodeListToArray(nodeList) {
+  return Array.prototype.slice.call(nodeList);
 };
 
 function onModelMutation() {
@@ -71,13 +67,11 @@ function onModelInit(e) {
   this._index = e.detail.toIndex; // seems unused internally. scheduled for deletion.
 
   var items = this._items;
-
-  _toConsumableArray(items).filter(function (el, index) {
-    return index !== e.detail.toIndex;
+  nodeListToArray(items).filter(function (el, i) {
+    return i !== e.detail.toIndex;
   }).forEach(function (el) {
     return el.setAttribute('tabindex', '-1');
   });
-
   items[e.detail.toIndex].setAttribute('tabindex', '0');
 }
 
@@ -85,13 +79,11 @@ function onModelReset(e) {
   this._index = e.detail.toIndex; // seems unused internally. scheduled for deletion.
 
   var items = this._items;
-
-  _toConsumableArray(items).filter(function (el, index) {
-    return index !== e.detail.toIndex;
+  nodeListToArray(items).filter(function (el, i) {
+    return i !== e.detail.toIndex;
   }).forEach(function (el) {
     return el.setAttribute('tabindex', '-1');
   });
-
   items[e.detail.toIndex].setAttribute('tabindex', '0');
 }
 

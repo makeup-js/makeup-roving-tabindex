@@ -14,6 +14,8 @@ const defaultOptions = {
     wrap: false
 };
 
+const nodeListToArray = (nodeList) => Array.prototype.slice.call(nodeList);
+
 function onModelMutation() {
     const modelIndex = this._navigationEmitter.model.index;
 
@@ -25,7 +27,7 @@ function onModelInit(e) {
 
     const items = this._items;
 
-    [...items].filter((el, index) => index !== e.detail.toIndex).forEach(el => el.setAttribute('tabindex', '-1'));
+    nodeListToArray(items).filter((el, i) => i !== e.detail.toIndex).forEach(el => el.setAttribute('tabindex', '-1'));
     items[e.detail.toIndex].setAttribute('tabindex', '0');
 }
 
@@ -34,7 +36,7 @@ function onModelReset(e) {
 
     const items = this._items;
 
-    [...items].filter((el, index) => index !== e.detail.toIndex).forEach(el => el.setAttribute('tabindex', '-1'));
+    nodeListToArray(items).filter((el, i) => i !== e.detail.toIndex).forEach(el => el.setAttribute('tabindex', '-1'));
     items[e.detail.toIndex].setAttribute('tabindex', '0');
 }
 
