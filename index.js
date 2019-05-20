@@ -30,7 +30,8 @@ var NavigationEmitter = require('makeup-navigation-emitter');
 var defaultOptions = {
   autoReset: null,
   index: 0,
-  wrap: false
+  wrap: false,
+  axis: 'both'
 };
 
 var nodeListToArray = function nodeListToArray(nodeList) {
@@ -144,7 +145,8 @@ function (_RovingTabindex) {
     _this._navigationEmitter = NavigationEmitter.createLinear(el, itemSelector, {
       autoInit: _this._options.index,
       autoReset: _this._options.autoReset,
-      wrap: _this._options.wrap
+      wrap: _this._options.wrap,
+      axis: _this._options.axis
     });
     return _this;
   }
