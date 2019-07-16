@@ -40,16 +40,13 @@ var nodeListToArray = function nodeListToArray(nodeList) {
 
 function onModelMutation() {
   var modelIndex = this._navigationEmitter.model.index;
-
-  this._items.forEach(function (el, index) {
+  this.filteredItems.forEach(function (el, index) {
     return el.setAttribute('tabindex', index !== modelIndex ? '-1' : '0');
   });
 }
 
 function onModelInit(e) {
-  this._index = e.detail.toIndex; // seems unused internally. scheduled for deletion.
-
-  var items = this._items;
+  var items = e.detail.items;
   nodeListToArray(items).filter(function (el, i) {
     return i !== e.detail.toIndex;
   }).forEach(function (el) {
@@ -61,7 +58,7 @@ function onModelInit(e) {
 function onModelReset(e) {
   this._index = e.detail.toIndex; // seems unused internally. scheduled for deletion.
 
-  var items = this._items;
+  var items = this.filteredItems;
   nodeListToArray(items).filter(function (el, i) {
     return i !== e.detail.toIndex;
   }).forEach(function (el) {
@@ -71,7 +68,7 @@ function onModelReset(e) {
 }
 
 function onModelChange(e) {
-  var items = this._items;
+  var items = this.filteredItems;
   var fromItem = items[e.detail.fromIndex];
   var toItem = items[e.detail.toIndex];
 
@@ -152,6 +149,11 @@ function (_RovingTabindex) {
   }
 
   _createClass(LinearRovingTabindex, [{
+    key: "reset",
+    value: function reset() {
+      this._navigationEmitter.model.reset();
+    }
+  }, {
     key: "destroy",
     value: function destroy() {
       this._navigationEmitter.destroy();
@@ -168,12 +170,22 @@ function (_RovingTabindex) {
     key: "wrap",
     set: function set(newWrap) {
       this._navigationEmitter.model.options.wrap = newWrap;
-    } // we cannot use a cached version of the items in question since the DOM may change without notice
+    }
+  }, {
+    key: "filteredItems",
+    get: function get() {
+      return this._navigationEmitter.model.filteredItems;
+    }
+  }, {
+    key: "items",
+    get: function get() {
+      return this._navigationEmitter.model.items;
+    } // backwards compat
 
   }, {
     key: "_items",
     get: function get() {
-      return this._el.querySelectorAll(this._itemSelector);
+      return this.items;
     }
   }]);
 

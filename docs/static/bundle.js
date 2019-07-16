@@ -662,11 +662,11 @@ $_mod.def("/nodelist-foreach-polyfill$1.2.0/index", function(require, exports, m
 
 });
 $_mod.run("/nodelist-foreach-polyfill$1.2.0/index");
-$_mod.installed("makeup-roving-tabindex$0.2.3", "makeup-navigation-emitter", "0.2.2");
-$_mod.main("/makeup-navigation-emitter$0.2.2", "");
-$_mod.installed("makeup-navigation-emitter$0.2.2", "custom-event-polyfill", "1.0.7");
-$_mod.installed("makeup-navigation-emitter$0.2.2", "nodelist-foreach-polyfill", "1.2.0");
-$_mod.installed("makeup-navigation-emitter$0.2.2", "makeup-key-emitter", "0.1.0");
+$_mod.installed("makeup-roving-tabindex$0.2.3", "makeup-navigation-emitter", "0.3.0");
+$_mod.main("/makeup-navigation-emitter$0.3.0", "");
+$_mod.installed("makeup-navigation-emitter$0.3.0", "custom-event-polyfill", "1.0.7");
+$_mod.installed("makeup-navigation-emitter$0.3.0", "nodelist-foreach-polyfill", "1.2.0");
+$_mod.installed("makeup-navigation-emitter$0.3.0", "makeup-key-emitter", "0.1.0");
 $_mod.main("/makeup-key-emitter$0.1.0", "");
 $_mod.installed("makeup-key-emitter$0.1.0", "custom-event-polyfill", "1.0.7");
 $_mod.def("/makeup-key-emitter$0.1.0/util", function(require, exports, module, __filename, __dirname) { 'use strict';
@@ -778,32 +778,254 @@ module.exports = {
 };
 
 });
-$_mod.installed("makeup-navigation-emitter$0.2.2", "makeup-exit-emitter", "0.1.1");
-$_mod.main("/makeup-exit-emitter$0.1.1", "");
-$_mod.installed("makeup-exit-emitter$0.1.1", "custom-event-polyfill", "1.0.7");
-$_mod.installed("makeup-exit-emitter$0.1.1", "makeup-next-id", "0.0.3");
-$_mod.main("/makeup-next-id$0.0.3", "");
-$_mod.def("/makeup-next-id$0.0.3/index", function(require, exports, module, __filename, __dirname) { 'use strict';
+$_mod.installed("makeup-navigation-emitter$0.3.0", "makeup-exit-emitter", "0.2.0");
+$_mod.main("/makeup-exit-emitter$0.2.0", "");
+$_mod.installed("makeup-exit-emitter$0.2.0", "custom-event-polyfill", "1.0.7");
+$_mod.installed("makeup-exit-emitter$0.2.0", "makeup-next-id", "0.1.1");
+$_mod.main("/makeup-next-id$0.1.1", "");
+$_mod.installed("makeup-next-id$0.1.1", "nanoid", "2.0.3");
+$_mod.main("/nanoid$2.0.3", "");
+$_mod.remap("/nanoid$2.0.3/index", "/nanoid$2.0.3/index.browser");
+$_mod.builtin("process", "/process$0.11.10/browser");
+$_mod.def("/process$0.11.10/browser", function(require, exports, module, __filename, __dirname) { // shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+});
+$_mod.def("/nanoid$2.0.3/index.browser", function(require, exports, module, __filename, __dirname) { var process=require("process"); if (process.env.NODE_ENV !== 'production') {
+  if (typeof self === 'undefined' || (!self.crypto && !self.msCrypto)) {
+    throw new Error(
+      'Your browser does not have secure random generator. ' +
+      'If you don’t need unpredictable IDs, you can use nanoid/non-secure.'
+    )
+  }
+}
+
+var crypto = self.crypto || self.msCrypto
+
+/*
+ * This alphabet uses a-z A-Z 0-9 _- symbols.
+ * Symbols order was changed for better gzip compression.
+ */
+var url = 'Uint8ArdomValuesObj012345679BCDEFGHIJKLMNPQRSTWXYZ_cfghkpqvwxyz-'
+
+module.exports = function (size) {
+  size = size || 21
+  var id = ''
+  var bytes = crypto.getRandomValues(new Uint8Array(size))
+  while (0 < size--) {
+    id += url[bytes[size] & 63]
+  }
+  return id
+}
+
+});
+$_mod.def("/makeup-next-id$0.1.1/index", function(require, exports, module, __filename, __dirname) { 'use strict';
+
+var nanoid = require('/nanoid$2.0.3/index.browser'/*'nanoid'*/);
 
 var sequenceMap = {};
 var defaultPrefix = 'nid';
+var randomPortion = nanoid(3);
 
 module.exports = function (el) {
   var prefix = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : defaultPrefix;
+  var separator = prefix === '' ? '' : '-'; // join first prefix with random portion to create key
 
-  // prevent empty string
-  var _prefix = prefix === '' ? defaultPrefix : prefix; // initialise prefix in sequence map if necessary
+  var key = "".concat(prefix).concat(separator).concat(randomPortion); // initialise key in sequence map if necessary
 
-
-  sequenceMap[_prefix] = sequenceMap[_prefix] || 0;
+  sequenceMap[key] = sequenceMap[key] || 0;
 
   if (!el.id) {
-    el.setAttribute('id', "".concat(_prefix, "-").concat(sequenceMap[_prefix]++));
+    el.setAttribute('id', "".concat(key, "-").concat(sequenceMap[key]++));
   }
+
+  return el.id;
 };
 
 });
-$_mod.def("/makeup-exit-emitter$0.1.1/index", function(require, exports, module, __filename, __dirname) { 'use strict';
+$_mod.def("/makeup-exit-emitter$0.2.0/index", function(require, exports, module, __filename, __dirname) { 'use strict';
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -811,7 +1033,7 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var nextID = require('/makeup-next-id$0.0.3/index'/*'makeup-next-id'*/);
+var nextID = require('/makeup-next-id$0.1.1/index'/*'makeup-next-id'*/);
 
 var focusExitEmitters = {}; // requires CustomEvent polyfill for IE9+
 // https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent
@@ -908,8 +1130,7 @@ module.exports = {
 };
 
 });
-$_mod.def("/makeup-navigation-emitter$0.2.2/index", function(require, exports, module, __filename, __dirname) { 'use strict'; // requires following polyfills or transforms for IE11
-// Object.assign
+$_mod.def("/makeup-navigation-emitter$0.3.0/index", function(require, exports, module, __filename, __dirname) { 'use strict'; // requires following polyfills or transforms for IE11
 // NodeList.forEach
 // CustomEvent
 
@@ -935,7 +1156,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var KeyEmitter = require('/makeup-key-emitter$0.1.0/index'/*'makeup-key-emitter'*/);
 
-var ExitEmitter = require('/makeup-exit-emitter$0.1.1/index'/*'makeup-exit-emitter'*/);
+var ExitEmitter = require('/makeup-exit-emitter$0.2.0/index'/*'makeup-exit-emitter'*/);
 
 var dataSetKey = 'data-makeup-index';
 var defaultOptions = {
@@ -945,9 +1166,19 @@ var defaultOptions = {
   wrap: false
 };
 
+var itemFilter = function itemFilter(el) {
+  return !el.hidden;
+};
+
+function clearData(els) {
+  els.forEach(function (el) {
+    return el.removeAttribute(dataSetKey);
+  });
+}
+
 function setData(els) {
   els.forEach(function (el, index) {
-    el.setAttribute(dataSetKey, index);
+    return el.setAttribute(dataSetKey, index);
   });
 }
 
@@ -955,7 +1186,7 @@ function onKeyPrev() {
   if (!this.atStart()) {
     this.index--;
   } else if (this.options.wrap) {
-    this.index = this.items.length - 1;
+    this.index = this.filteredItems.length - 1;
   }
 }
 
@@ -986,25 +1217,20 @@ function onKeyHome() {
 }
 
 function onKeyEnd() {
-  this.index = this.items.length;
+  this.index = this.filteredItems.length;
 }
 
 function onFocusExit() {
   if (this.options.autoReset !== null) {
-    this._index = this.options.autoReset; // do not use index setter, it will trigger change event
-
-    this._el.dispatchEvent(new CustomEvent('navigationModelReset', {
-      detail: {
-        toIndex: this.options.autoReset
-      },
-      bubbles: false
-    }));
+    this.reset();
   }
 }
 
 function onMutation() {
-  this.items = this._el.querySelectorAll(this._itemSelector);
-  setData(this.items);
+  // clear data-makeup-index on ALL items
+  clearData(this.items); // set data-makeup-index only on filtered items (e.g. non-hidden ones)
+
+  setData(this.filteredItems);
 
   this._el.dispatchEvent(new CustomEvent('navigationModelMutation'));
 }
@@ -1015,7 +1241,6 @@ var NavigationModel = function NavigationModel(el, itemSelector, selectedOptions
   this.options = _extends({}, defaultOptions, selectedOptions);
   this._el = el;
   this._itemSelector = itemSelector;
-  this.items = el.querySelectorAll(itemSelector);
 };
 
 var LinearNavigationModel =
@@ -1035,6 +1260,7 @@ function (_NavigationModel) {
 
       _this._el.dispatchEvent(new CustomEvent('navigationModelInit', {
         detail: {
+          items: _this.filteredItems,
           toIndex: _this.options.autoInit
         },
         bubbles: false
@@ -1045,9 +1271,23 @@ function (_NavigationModel) {
   }
 
   _createClass(LinearNavigationModel, [{
+    key: "reset",
+    value: function reset() {
+      if (this.options.autoReset !== null) {
+        this._index = this.options.autoReset; // do not use index setter, it will trigger change event
+
+        this._el.dispatchEvent(new CustomEvent('navigationModelReset', {
+          detail: {
+            toIndex: this.options.autoReset
+          },
+          bubbles: false
+        }));
+      }
+    }
+  }, {
     key: "atEnd",
     value: function atEnd() {
-      return this.index === this.items.length - 1;
+      return this.index === this.filteredItems.length - 1;
     }
   }, {
     key: "atStart",
@@ -1055,12 +1295,22 @@ function (_NavigationModel) {
       return this.index <= 0;
     }
   }, {
+    key: "items",
+    get: function get() {
+      return this._el.querySelectorAll(this._itemSelector);
+    }
+  }, {
+    key: "filteredItems",
+    get: function get() {
+      return Array.prototype.slice.call(this.items).filter(itemFilter);
+    }
+  }, {
     key: "index",
     get: function get() {
       return this._index;
     },
     set: function set(newIndex) {
-      if (newIndex > -1 && newIndex < this.items.length && newIndex !== this.index) {
+      if (newIndex > -1 && newIndex < this.filteredItems.length && newIndex !== this.index) {
         this._el.dispatchEvent(new CustomEvent('navigationModelChange', {
           detail: {
             fromIndex: this.index,
@@ -1102,7 +1352,7 @@ function () {
     this._clickListener = onClick.bind(model);
     this._focusExitListener = onFocusExit.bind(model);
     this._observer = new MutationObserver(onMutation.bind(model));
-    setData(model.items);
+    setData(model.filteredItems);
     KeyEmitter.addKeyDown(this.el);
     ExitEmitter.addFocusExit(this.el);
     var axis = model.options.axis;
@@ -1124,7 +1374,9 @@ function () {
 
     this._observer.observe(this.el, {
       childList: true,
-      subtree: true
+      subtree: true,
+      attributeFilter: ['hidden'],
+      attributes: true
     });
   }
 
@@ -1191,7 +1443,7 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var NavigationEmitter = require('/makeup-navigation-emitter$0.2.2/index'/*'makeup-navigation-emitter'*/);
+var NavigationEmitter = require('/makeup-navigation-emitter$0.3.0/index'/*'makeup-navigation-emitter'*/);
 
 var defaultOptions = {
   autoReset: null,
@@ -1206,16 +1458,13 @@ var nodeListToArray = function nodeListToArray(nodeList) {
 
 function onModelMutation() {
   var modelIndex = this._navigationEmitter.model.index;
-
-  this._items.forEach(function (el, index) {
+  this.filteredItems.forEach(function (el, index) {
     return el.setAttribute('tabindex', index !== modelIndex ? '-1' : '0');
   });
 }
 
 function onModelInit(e) {
-  this._index = e.detail.toIndex; // seems unused internally. scheduled for deletion.
-
-  var items = this._items;
+  var items = e.detail.items;
   nodeListToArray(items).filter(function (el, i) {
     return i !== e.detail.toIndex;
   }).forEach(function (el) {
@@ -1227,7 +1476,7 @@ function onModelInit(e) {
 function onModelReset(e) {
   this._index = e.detail.toIndex; // seems unused internally. scheduled for deletion.
 
-  var items = this._items;
+  var items = this.filteredItems;
   nodeListToArray(items).filter(function (el, i) {
     return i !== e.detail.toIndex;
   }).forEach(function (el) {
@@ -1237,7 +1486,7 @@ function onModelReset(e) {
 }
 
 function onModelChange(e) {
-  var items = this._items;
+  var items = this.filteredItems;
   var fromItem = items[e.detail.fromIndex];
   var toItem = items[e.detail.toIndex];
 
@@ -1318,6 +1567,11 @@ function (_RovingTabindex) {
   }
 
   _createClass(LinearRovingTabindex, [{
+    key: "reset",
+    value: function reset() {
+      this._navigationEmitter.model.reset();
+    }
+  }, {
     key: "destroy",
     value: function destroy() {
       this._navigationEmitter.destroy();
@@ -1334,12 +1588,22 @@ function (_RovingTabindex) {
     key: "wrap",
     set: function set(newWrap) {
       this._navigationEmitter.model.options.wrap = newWrap;
-    } // we cannot use a cached version of the items in question since the DOM may change without notice
+    }
+  }, {
+    key: "filteredItems",
+    get: function get() {
+      return this._navigationEmitter.model.filteredItems;
+    }
+  }, {
+    key: "items",
+    get: function get() {
+      return this._navigationEmitter.model.items;
+    } // backwards compat
 
   }, {
     key: "_items",
     get: function get() {
-      return this._el.querySelectorAll(this._itemSelector);
+      return this.items;
     }
   }]);
 

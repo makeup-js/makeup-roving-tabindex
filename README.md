@@ -76,10 +76,13 @@ Markup after:
 
 ## Properties
 
+* `filteredItems`: returns filtered items (e.g. non-hidden items)
 * `index`: the index position of the roving tabindex (i.e. the element with tabindex="0")
+* `items`: returns all items that match item selector
 
 ## Methods
 
+* `reset`: will force a reset to the value specified by `autoReset`
 * `destroy`: destroys all event listeners
 
 ## Custom Events        

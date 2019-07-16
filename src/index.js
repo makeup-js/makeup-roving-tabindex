@@ -20,29 +20,28 @@ const nodeListToArray = (nodeList) => Array.prototype.slice.call(nodeList);
 function onModelMutation() {
     const modelIndex = this._navigationEmitter.model.index;
 
-    this._items.forEach((el, index) => el.setAttribute('tabindex', index !== modelIndex ? '-1' : '0'));
+    this.filteredItems.forEach((el, index) => el.setAttribute('tabindex', index !== modelIndex ? '-1' : '0'));
 }
 
 function onModelInit(e) {
-    this._index = e.detail.toIndex; // seems unused internally. scheduled for deletion.
-
-    const items = this._items;
+    const items = e.detail.items;
 
     nodeListToArray(items).filter((el, i) => i !== e.detail.toIndex).forEach(el => el.setAttribute('tabindex', '-1'));
+
     items[e.detail.toIndex].setAttribute('tabindex', '0');
 }
 
 function onModelReset(e) {
     this._index = e.detail.toIndex; // seems unused internally. scheduled for deletion.
 
-    const items = this._items;
+    const items = this.filteredItems;
 
     nodeListToArray(items).filter((el, i) => i !== e.detail.toIndex).forEach(el => el.setAttribute('tabindex', '-1'));
     items[e.detail.toIndex].setAttribute('tabindex', '0');
 }
 
 function onModelChange(e) {
-    const items = this._items;
+    const items = this.filteredItems;
 
     const fromItem = items[e.detail.fromIndex];
     const toItem = items[e.detail.toIndex];
@@ -114,9 +113,21 @@ class LinearRovingTabindex extends RovingTabindex {
         this._navigationEmitter.model.options.wrap = newWrap;
     }
 
-    // we cannot use a cached version of the items in question since the DOM may change without notice
+    get filteredItems() {
+        return this._navigationEmitter.model.filteredItems;
+    }
+
+    get items() {
+        return this._navigationEmitter.model.items;
+    }
+
+    // backwards compat
     get _items() {
-        return this._el.querySelectorAll(this._itemSelector);
+        return this.items;
+    }
+
+    reset() {
+        this._navigationEmitter.model.reset();
     }
 
     destroy() {
