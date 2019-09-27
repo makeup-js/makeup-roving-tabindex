@@ -1470,7 +1470,10 @@ function onModelInit(e) {
   }).forEach(function (el) {
     return el.setAttribute('tabindex', '-1');
   });
-  items[e.detail.toIndex].setAttribute('tabindex', '0');
+
+  if (items[e.detail.toIndex]) {
+    items[e.detail.toIndex].setAttribute('tabindex', '0');
+  }
 }
 
 function onModelReset(e) {

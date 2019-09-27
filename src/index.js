@@ -28,7 +28,9 @@ function onModelInit(e) {
 
     nodeListToArray(items).filter((el, i) => i !== e.detail.toIndex).forEach(el => el.setAttribute('tabindex', '-1'));
 
-    items[e.detail.toIndex].setAttribute('tabindex', '0');
+    if (items[e.detail.toIndex]) {
+        items[e.detail.toIndex].setAttribute('tabindex', '0');
+    }
 }
 
 function onModelReset(e) {
