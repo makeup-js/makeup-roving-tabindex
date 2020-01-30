@@ -1,6 +1,7 @@
-/* eslint-disable no-console */
+// requires NodeList.forEach polyfill for IE
+require('nodelist-foreach-polyfill');
 
-const RovingTabindex = require('../index.js');
+const RovingTabindex = require('../../index.js');
 
 const rovers = [];
 const appender = document.getElementById('appender');

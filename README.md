@@ -13,7 +13,7 @@ A vanilla JavaScript port of <a href="https://github.com/ianmcburnie/jquery-rovi
 
 ## Experimental
 
-This module is still in an experimental state, until it reaches v1.0.0 you must consider all minor releases as breaking changes. Patch releases may introduce new features, but will be backwards compatible.
+This CommonJS module is still in an experimental state, until it reaches v1.0.0 you must consider all minor releases as breaking changes. Patch releases may introduce new features, but will be backwards compatible.
 
 ## Install
 
@@ -94,28 +94,9 @@ Markup after:
 
 ## Dependencies
 
-* `makeup-navigation-emitter`
-
-## Requirements
-
-* CustomEvent polyfill for IE11 (included if bundling with Lasso)
-* NodeList.forEach polyfill for IE11 (included if bundling with Lasso)
-
-## Development
-
-* `yarn start`
-* `yarn test`
-* `yarn lint`
-* `yarn fix`
-* `yarn build`
-* `yarn clean`
-
-## Test Reports
-
-Each test run will generate the following reports:
-
-* `/reports/coverage` contains Istanbul code coverage report
-* `/reports/html` contains HTML test report
+* [makeup-navigation-emitter](https://github.com/makeup-js/makeup-navigation-emitter)
+* [custom-event-polyfill](https://github.com/krambuhl/custom-event-polyfill) (for IE)
+* [nodelist-foreach-polyfill](https://github.com/imagitama/nodelist-foreach-polyfill) (for IE)
 
 ## CI Build
 
